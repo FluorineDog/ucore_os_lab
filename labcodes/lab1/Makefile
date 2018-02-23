@@ -7,6 +7,7 @@ V       := @
 #need llvm/cang-3.5+
 #USELLVM := 1
 # try to infer the correct GCCPREFX
+# dog: use i386 version of cc-related
 ifndef GCCPREFIX
 GCCPREFIX := $(shell if i386-elf-objdump -i 2>&1 | grep '^elf32-i386$$' >/dev/null 2>&1; \
 	then echo 'i386-elf-'; \
@@ -23,6 +24,7 @@ GCCPREFIX := $(shell if i386-elf-objdump -i 2>&1 | grep '^elf32-i386$$' >/dev/nu
 endif
 
 # try to infer the correct QEMU
+# dog: use i386 version of qemu
 ifndef QEMU
 QEMU := $(shell if which qemu-system-i386 > /dev/null; \
 	then echo 'qemu-system-i386'; exit; \
@@ -44,6 +46,7 @@ endif
 .DELETE_ON_ERROR:
 
 # define compiler and flags
+# dog: set up cc
 ifndef  USELLVM
 HOSTCC		:= gcc
 HOSTCFLAGS	:= -g -Wall -O2
@@ -59,7 +62,7 @@ CFLAGS	+= $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 &
 endif
 
 CTYPE	:= c S
-
+# dog: common CC tools
 LD      := $(GCCPREFIX)ld
 LDFLAGS	:= -m $(shell $(LD) -V | grep elf_i386 2>/dev/null)
 LDFLAGS	+= -nostdlib
@@ -67,6 +70,7 @@ LDFLAGS	+= -nostdlib
 OBJCOPY := $(GCCPREFIX)objcopy
 OBJDUMP := $(GCCPREFIX)objdump
 
+# dog: common linux tools
 COPY	:= cp
 MKDIR   := mkdir -p
 MV		:= mv
@@ -77,6 +81,7 @@ SH		:= sh
 TR		:= tr
 TOUCH	:= touch -c
 
+# dog: set up system files
 OBJDIR	:= obj
 BINDIR	:= bin
 
@@ -84,8 +89,10 @@ ALLOBJS	:=
 ALLDEPS	:=
 TARGETS	:=
 
+# dog: TODO
 include tools/function.mk
 
+# dog: list file whose postfix=$CTYPE
 listf_cc = $(call listf,$(1),$(CTYPE))
 
 # for cc
