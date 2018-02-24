@@ -161,10 +161,12 @@ $(call create_target,kernel)
 
 # create bootblock
 bootfiles = $(call listf_cc,boot)
+# dog: for every file in boot/*, compile 
 $(foreach f,$(bootfiles),$(call cc_compile,$(f),$(CC),$(CFLAGS) -Os -nostdinc))
 
 bootblock = $(call totarget,bootblock)
 
+# dog: link bootblock together with ld-script, then sign it.
 $(bootblock): $(call toobj,$(bootfiles)) | $(call totarget,sign)
 	@echo + ld $@
 	$(V)$(LD) $(LDFLAGS) -N -e start -Ttext 0x7C00 $^ -o $(call toobj,bootblock)
@@ -177,6 +179,7 @@ $(call create_target,bootblock)
 # -------------------------------------------------------------------
 
 # create 'sign' tools
+# dog: to sign the last 2 byte of the first section with hex 55 AA
 $(call add_files_host,tools/sign.c,sign,sign)
 $(call create_target_host,sign,sign)
 
@@ -185,9 +188,13 @@ $(call create_target_host,sign,sign)
 # create ucore.img
 UCOREIMG	:= $(call totarget,ucore.img)
 
+# dog: combine boots together
 $(UCOREIMG): $(kernel) $(bootblock)
+	# dog: first null for 10000
 	$(V)dd if=/dev/zero of=$@ count=10000
+	# dog: then bootblock file
 	$(V)dd if=$(bootblock) of=$@ conv=notrunc
+	# dog: then kernel file, skip 1 block
 	$(V)dd if=$(kernel) of=$@ seek=1 conv=notrunc
 
 $(call create_target,ucore.img)
@@ -213,6 +220,7 @@ TARGETS: $(TARGETS)
 
 .DEFAULT_GOAL := TARGETS
 
+# auxiliary tools
 .PHONY: qemu qemu-nox debug debug-nox
 qemu-mon: $(UCOREIMG)
 	$(V)$(QEMU)  -no-reboot -monitor stdio -hda $< -serial null

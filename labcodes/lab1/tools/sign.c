@@ -28,6 +28,8 @@ main(int argc, char *argv[]) {
         return -1;
     }
     fclose(ifp);
+		// dog: sign the last 2 byte of the first section with hex 55 AA
+		// dog: historical reason
     buf[510] = 0x55;
     buf[511] = 0xAA;
     FILE *ofp = fopen(argv[2], "wb+");
