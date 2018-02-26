@@ -16,8 +16,8 @@
 
 // high 4 bytes
 // dog: G = granularity => always set => 4KB
-// dog: D = default operand size => never set => 16-bits 
-// dog: L = long-mode-segment => never set => 16-bits 
+// dog: D = default operand size => never set => code16 
+// dog: L = long-mode-segment => never set => code16 
 // dog: AVL => always set => available 
 // dog: limit
 // dog: P = 1 => segment present

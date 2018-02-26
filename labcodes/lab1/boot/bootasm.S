@@ -5,6 +5,10 @@
 # memory at physical address 0x7c00 and starts executing in real mode
 # with %cs=0 %ip=7c00.
 
+# dog: index | TI    | RPL/CPL
+# dog: 15...3| 2...2 | 1.....0
+# dog: RPL = request priviledge level, at selector
+# dog: CPL = current priviledge level, in CPU
 .set PROT_MODE_CSEG,        0x8                     # kernel code segment selector
 .set PROT_MODE_DSEG,        0x10                    # kernel data segment selector
 .set CR0_PE_ON,             0x1                     # protected mode enable flag
@@ -53,18 +57,20 @@ seta20.2:
 
 		# dog: set gdt register
     lgdt gdtdesc 
-		# dog: 
+		# dog: set bit0=1, to protected mode
     movl %cr0, %eax
     orl $CR0_PE_ON, %eax
     movl %eax, %cr0
 
     # Jump to next instruction, but in 32-bit code segment.
     # Switches processor into 32-bit mode.
+		# dog: selector ........ addr
     ljmp $PROT_MODE_CSEG, $protcseg
 
 .code32                                             # Assemble for 32-bit mode
 protcseg:
     # Set up the protected-mode data segment registers
+		# dog: set kernel data selector to all 
     movw $PROT_MODE_DSEG, %ax                       # Our data segment selector
     movw %ax, %ds                                   # -> DS: Data Segment
     movw %ax, %es                                   # -> ES: Extra Segment
@@ -83,10 +89,12 @@ spin:
 
 # Bootstrap GDT
 .p2align 2                                          # force 4 byte alignment
-gdt:
 		# dog: first is not valid
+		# dog: r_x for codes seg, rw_ for data seg
+		# dog: base = 0, limit = max
+		# dog: ready for real mode
+gdt:
     SEG_NULLASM                                     # null seg
-		# dog: 
     SEG_ASM(STA_X|STA_R, 0x0, 0xffffffff)           # code seg for bootloader and kernel
     SEG_ASM(STA_W, 0x0, 0xffffffff)                 # data seg for bootloader and kernel
 
