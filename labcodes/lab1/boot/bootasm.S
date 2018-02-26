@@ -27,18 +27,22 @@ start:
     #  address line 20 is tied low, so that addresses higher than
     #  1MB wrap around to zero by default. This code undoes this.
 seta20.1:
+		# dog: read status reg until free
     inb $0x64, %al                                  # Wait for not busy(8042 input buffer empty).
-    testb $0x2, %al
+    testb $0x2, %al 
     jnz seta20.1
 
+		# dog: choose keyboard controller P2
     movb $0xd1, %al                                 # 0xd1 -> port 0x64
     outb %al, $0x64                                 # 0xd1 means: write data to 8042's P2 port
 
 seta20.2:
+		# dog: read status reg until free
     inb $0x64, %al                                  # Wait for not busy(8042 input buffer empty).
     testb $0x2, %al
     jnz seta20.2
 
+		# dog: set A20 to 1 = (x & 0x2)
     movb $0xdf, %al                                 # 0xdf -> port 0x60
     outb %al, $0x60                                 # 0xdf = 11011111, means set P2's A20 bit(the 1 bit) to 1
 
@@ -46,7 +50,10 @@ seta20.2:
     # and segment translation that makes virtual addresses
     # identical to physical addresses, so that the
     # effective memory map does not change during the switch.
-    lgdt gdtdesc
+
+		# dog: set gdt register
+    lgdt gdtdesc 
+		# dog: 
     movl %cr0, %eax
     orl $CR0_PE_ON, %eax
     movl %eax, %cr0
@@ -77,7 +84,9 @@ spin:
 # Bootstrap GDT
 .p2align 2                                          # force 4 byte alignment
 gdt:
+		# dog: first is not valid
     SEG_NULLASM                                     # null seg
+		# dog: 
     SEG_ASM(STA_X|STA_R, 0x0, 0xffffffff)           # code seg for bootloader and kernel
     SEG_ASM(STA_W, 0x0, 0xffffffff)                 # data seg for bootloader and kernel
 

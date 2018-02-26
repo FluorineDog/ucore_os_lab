@@ -72,6 +72,8 @@ static void readseg(uintptr_t va, uint32_t count, uint32_t offset) {
 	uintptr_t end_va = va + count;
 
 	// round down to sector boundary
+	// dog: warning !!
+	// dog: may override data before va seg
 	va -= offset % SECTSIZE;
 
 	// translate from bytes to sectors; kernel starts at sector 1
