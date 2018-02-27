@@ -190,11 +190,11 @@ UCOREIMG	:= $(call totarget,ucore.img)
 
 # dog: combine boots together
 $(UCOREIMG): $(kernel) $(bootblock)
-	# dog: first null for 10000
+	# dog: create img file sized by 10000*512
 	$(V)dd if=/dev/zero of=$@ count=10000
-	# dog: then bootblock file
+	# dog: dump bootblock file, as first sector
 	$(V)dd if=$(bootblock) of=$@ conv=notrunc
-	# dog: then kernel file, skip 1 block
+	# dog: dump kernel file, skip first sector
 	$(V)dd if=$(kernel) of=$@ seek=1 conv=notrunc
 
 $(call create_target,ucore.img)

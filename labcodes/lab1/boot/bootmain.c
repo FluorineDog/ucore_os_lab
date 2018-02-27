@@ -48,12 +48,12 @@ static void readsect(void *dst, uint32_t secno) {
 	waitdisk();
 
 	// dog: base 0x1F0
+	// dog: READ SECTORS command, ready
 	outb(0x1F2, 1);	// count = 1
 	outb(0x1F3, secno & 0xFF);
 	outb(0x1F4, (secno >> 8) & 0xFF);
 	outb(0x1F5, (secno >> 16) & 0xFF);
 	outb(0x1F6, ((secno >> 24) & 0xF) | 0xE0);
-	// dog: READ SECTORS command
 	outb(0x1F7, 0x20);	// cmd 0x20 - read sectors
 
 	// wait for disk to be ready
@@ -89,7 +89,7 @@ static void readseg(uintptr_t va, uint32_t count, uint32_t offset) {
 
 /* bootmain - the entry of bootloader */
 void bootmain(void) {
-	// read the 1st page off disk from ELFHDR
+	// read the elf page off disk from ELFHDR
 	readseg((uintptr_t)ELFHDR, SECTSIZE * 8, 0);
 
 	// is this a valid ELF?

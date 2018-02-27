@@ -26,7 +26,7 @@ static inline void insl(uint32_t port, void *addr, int cnt)
 static inline void outb(uint16_t port, uint8_t data)
 		__attribute__((always_inline));
 static inline void outw(uint16_t port, uint16_t data)
-		__attribute__((always_inline));bsfl
+		__attribute__((always_inline));
 static inline uint32_t read_ebp(void) __attribute__((always_inline));
 
 /* Pseudo-descriptors used for LGDT, LLDT(not used) and LIDT instructions. */
@@ -48,8 +48,7 @@ static inline uint8_t inb(uint16_t port) {
 
 static inline void insl(uint32_t port, void *addr, int cnt) {
 	// dog: clear direction flag
-	// dog: 
-	// dog: clear direction flag
+	// dog: rep read data to addr++
 	asm volatile(
 			"cld;"
 			"repne; insl;"
