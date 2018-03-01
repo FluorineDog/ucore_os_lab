@@ -53,7 +53,7 @@ void idt_init(void) {
 	};
 	for (int k = 0; k < sizeof(usr_gates) / sizeof(usr_gates[0]); ++k) {
 		int i = usr_gates[k];
-		SETGATE(idt[i], 0, USER_CS, __vectors[i], DPL_USER);
+		SETGATE(idt[i], 0, KERNEL_CS, __vectors[i], DPL_USER);
 	}
 	lidt(&idt_pd);
 }
@@ -144,7 +144,6 @@ static void switch_to_kernel();
 /* trap_dispatch - dispatch based on what type of trap occurred */
 static void trap_dispatch(struct trapframe *tf) {
 	char c;
-
 	switch (tf->tf_trapno) {
 		case IRQ_OFFSET + IRQ_TIMER:
 			/* LAB1 YOUR CODE : STEP 3 */
@@ -156,7 +155,7 @@ static void trap_dispatch(struct trapframe *tf) {
 			{
 				static int counter = 0;
 				while (++counter >= TICK_NUM) {
-					// print_ticks();
+					print_ticks();
 				}
 			}
 			break;
@@ -173,9 +172,8 @@ static void trap_dispatch(struct trapframe *tf) {
 			switch_to_user(tf);
 		} break;
 		case T_SWITCH_TOK: {
-			// switch_to_kernel(tf);
-		}
-		break;
+			switch_to_kernel(tf);
+		} break;
 		case IRQ_OFFSET + IRQ_IDE1:
 		case IRQ_OFFSET + IRQ_IDE2:
 			/* do nothing */
@@ -202,13 +200,25 @@ static void switch_to_user(struct trapframe *tf) {
 	k2u_frame->tf_gs = USER_DS;
 	k2u_frame->tf_eflags &= ~FL_IOPL_MASK;
 	k2u_frame->tf_eflags |= FL_IOPL_3;
-	((uint32_t *)tf)[-1] = k2u_frame;
+	((uint32_t *)tf)[-1] = (uint32_t)&tmp_k2u_frame;
 	cprintf("delta std: %d\n", tf->tf_esp - k2u_frame->tf_esp);
 	print_trapframe(k2u_frame);
 }
 
 static void switch_to_kernel(struct trapframe *tf) {
-	//  fake_trapframe = 
+	struct trapframe *u2k_frame = tf;
+	u2k_frame->tf_cs = KERNEL_CS;
+	u2k_frame->tf_ss = KERNEL_DS;
+	u2k_frame->tf_ds = KERNEL_DS;
+	u2k_frame->tf_es = KERNEL_DS;
+	u2k_frame->tf_fs = KERNEL_DS;
+	u2k_frame->tf_gs = KERNEL_DS;
+	u2k_frame->tf_eflags &= ~FL_IOPL_MASK;
+	u2k_frame->tf_eflags |= FL_IOPL_0;
+	uint32_t new_stack_top = tf->tf_esp - sizeof(trapframe) + 0x8;
+	// (uint32_t)tf + 0x8 is not correct, because it is at user stack
+	((uint32_t *)tf)[-1] = new_stack_top;
+	memmove(new_stack_top, u2k_frame, sizeof(trapframe) - 0x8);
 }
 
 /* *`
