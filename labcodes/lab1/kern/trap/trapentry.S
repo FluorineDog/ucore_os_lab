@@ -18,6 +18,7 @@ __alltraps:
     movw %ax, %es
 
     # push %esp to pass a pointer to the trapframe as an argument to trap()
+		# ((uint32_t *)tf)[-1] modify here
     pushl %esp
 
     # call trap(tf), where tf=%esp

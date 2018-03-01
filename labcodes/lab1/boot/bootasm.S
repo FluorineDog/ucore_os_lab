@@ -5,6 +5,7 @@
 # memory at physical address 0x7c00 and starts executing in real mode
 # with %cs=0 %ip=7c00.
 
+# dog: selector format
 # dog: index | TI    | RPL/CPL
 # dog: 15...3| 2...2 | 1.....0
 # dog: RPL = request priviledge level, at selector

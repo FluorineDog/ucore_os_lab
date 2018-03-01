@@ -12,10 +12,10 @@
 #define TICK_NUM 100
 
 static void print_ticks() {
-    cprintf("%d ticks\n",TICK_NUM);
+	cprintf("%d ticks\n", TICK_NUM);
 #ifdef DEBUG_GRADE
-    cprintf("End of Test.\n");
-    panic("EOT: kernel seems ok.");
+	cprintf("End of Test.\n");
+	panic("EOT: kernel seems ok.");
 #endif
 }
 
@@ -27,15 +27,12 @@ static void print_ticks() {
  * */
 static struct gatedesc idt[256] = {{0}};
 
-static struct pseudodesc idt_pd = {
-    sizeof(idt) - 1, (uintptr_t)idt
-};
+static struct pseudodesc idt_pd = {sizeof(idt) - 1, (uintptr_t)idt};
 
 /* idt_init - initialize IDT to each of the entry points in kern/trap/vectors.S */
-void
-idt_init(void) {
-     /* LAB1 YOUR CODE : STEP 2 */
-     /* (1) Where are the entry addrs of each Interrupt Service Routine (ISR)?
+void idt_init(void) {
+	/* LAB1 YOUR CODE : STEP 2 */
+	/* (1) Where are the entry addrs of each Interrupt Service Routine (ISR)?
       *     All ISR's entry addrs are stored in __vectors. where is uintptr_t __vectors[] ?
       *     __vectors[] is in kern/trap/vector.S which is produced by tools/vector.c
       *     (try "make" command in lab1, then you will find vector.S in kern/trap DIR)
@@ -46,142 +43,180 @@ idt_init(void) {
       *     You don't know the meaning of this instruction? just google it! and check the libs/x86.h to know more.
       *     Notice: the argument of lidt is idt_pd. try to find it!
       */
+	extern uintptr_t __vectors[];
+	for (int i = 0; i < sizeof(idt) / sizeof(idt[0]); ++i) {
+		SETGATE(idt[i], 0, KERNEL_CS, __vectors[i], DPL_KERNEL);
+	}
+	int usr_gates[] = {
+			T_SYSCALL,
+			T_SWITCH_TOK,
+	};
+	for (int k = 0; k < sizeof(usr_gates) / sizeof(usr_gates[0]); ++k) {
+		int i = usr_gates[k];
+		SETGATE(idt[i], 0, USER_CS, __vectors[i], DPL_USER);
+	}
+	lidt(&idt_pd);
 }
 
-static const char *
-trapname(int trapno) {
-    static const char * const excnames[] = {
-        "Divide error",
-        "Debug",
-        "Non-Maskable Interrupt",
-        "Breakpoint",
-        "Overflow",
-        "BOUND Range Exceeded",
-        "Invalid Opcode",
-        "Device Not Available",
-        "Double Fault",
-        "Coprocessor Segment Overrun",
-        "Invalid TSS",
-        "Segment Not Present",
-        "Stack Fault",
-        "General Protection",
-        "Page Fault",
-        "(unknown trap)",
-        "x87 FPU Floating-Point Error",
-        "Alignment Check",
-        "Machine-Check",
-        "SIMD Floating-Point Exception"
-    };
+static const char *trapname(int trapno) {
+	static const char *const excnames[] = {"Divide error",
+																				 "Debug",
+																				 "Non-Maskable Interrupt",
+																				 "Breakpoint",
+																				 "Overflow",
+																				 "BOUND Range Exceeded",
+																				 "Invalid Opcode",
+																				 "Device Not Available",
+																				 "Double Fault",
+																				 "Coprocessor Segment Overrun",
+																				 "Invalid TSS",
+																				 "Segment Not Present",
+																				 "Stack Fault",
+																				 "General Protection",
+																				 "Page Fault",
+																				 "(unknown trap)",
+																				 "x87 FPU Floating-Point Error",
+																				 "Alignment Check",
+																				 "Machine-Check",
+																				 "SIMD Floating-Point Exception"};
 
-    if (trapno < sizeof(excnames)/sizeof(const char * const)) {
-        return excnames[trapno];
-    }
-    if (trapno >= IRQ_OFFSET && trapno < IRQ_OFFSET + 16) {
-        return "Hardware Interrupt";
-    }
-    return "(unknown trap)";
+	if (trapno < sizeof(excnames) / sizeof(const char *const)) {
+		return excnames[trapno];
+	}
+	if (trapno >= IRQ_OFFSET && trapno < IRQ_OFFSET + 16) {
+		return "Hardware Interrupt";
+	}
+	return "(unknown trap)";
 }
 
 /* trap_in_kernel - test if trap happened in kernel */
-bool
-trap_in_kernel(struct trapframe *tf) {
-    return (tf->tf_cs == (uint16_t)KERNEL_CS);
+bool trap_in_kernel(struct trapframe *tf) {
+	return (tf->tf_cs == (uint16_t)KERNEL_CS);
 }
 
 static const char *IA32flags[] = {
-    "CF", NULL, "PF", NULL, "AF", NULL, "ZF", "SF",
-    "TF", "IF", "DF", "OF", NULL, NULL, "NT", NULL,
-    "RF", "VM", "AC", "VIF", "VIP", "ID", NULL, NULL,
+		"CF", NULL, "PF", NULL, "AF", NULL, "ZF", "SF",	"TF",	"IF", "DF", "OF",
+		NULL, NULL, "NT", NULL, "RF", "VM", "AC", "VIF", "VIP", "ID", NULL, NULL,
 };
 
-void
-print_trapframe(struct trapframe *tf) {
-    cprintf("trapframe at %p\n", tf);
-    print_regs(&tf->tf_regs);
-    cprintf("  ds   0x----%04x\n", tf->tf_ds);
-    cprintf("  es   0x----%04x\n", tf->tf_es);
-    cprintf("  fs   0x----%04x\n", tf->tf_fs);
-    cprintf("  gs   0x----%04x\n", tf->tf_gs);
-    cprintf("  trap 0x%08x %s\n", tf->tf_trapno, trapname(tf->tf_trapno));
-    cprintf("  err  0x%08x\n", tf->tf_err);
-    cprintf("  eip  0x%08x\n", tf->tf_eip);
-    cprintf("  cs   0x----%04x\n", tf->tf_cs);
-    cprintf("  flag 0x%08x ", tf->tf_eflags);
+void print_trapframe(struct trapframe *tf) {
+	cprintf("trapframe at %p\n", tf);
+	print_regs(&tf->tf_regs);
+	cprintf("  ds   0x----%04x\n", tf->tf_ds);
+	cprintf("  es   0x----%04x\n", tf->tf_es);
+	cprintf("  fs   0x----%04x\n", tf->tf_fs);
+	cprintf("  gs   0x----%04x\n", tf->tf_gs);
+	cprintf("  trap 0x%08x %s\n", tf->tf_trapno, trapname(tf->tf_trapno));
+	cprintf("  err  0x%08x\n", tf->tf_err);
+	cprintf("  eip  0x%08x\n", tf->tf_eip);
+	cprintf("  cs   0x----%04x\n", tf->tf_cs);
+	cprintf("  flag 0x%08x ", tf->tf_eflags);
 
-    int i, j;
-    for (i = 0, j = 1; i < sizeof(IA32flags) / sizeof(IA32flags[0]); i ++, j <<= 1) {
-        if ((tf->tf_eflags & j) && IA32flags[i] != NULL) {
-            cprintf("%s,", IA32flags[i]);
-        }
-    }
-    cprintf("IOPL=%d\n", (tf->tf_eflags & FL_IOPL_MASK) >> 12);
+	int i, j;
+	for (i = 0, j = 1; i < sizeof(IA32flags) / sizeof(IA32flags[0]);
+			 i++, j <<= 1) {
+		if ((tf->tf_eflags & j) && IA32flags[i] != NULL) {
+			cprintf("%s,", IA32flags[i]);
+		}
+	}
+	cprintf("IOPL=%d\n", (tf->tf_eflags & FL_IOPL_MASK) >> 12);
 
-    if (!trap_in_kernel(tf)) {
-        cprintf("  esp  0x%08x\n", tf->tf_esp);
-        cprintf("  ss   0x----%04x\n", tf->tf_ss);
-    }
+	if (!trap_in_kernel(tf)) {
+		cprintf("  esp  0x%08x\n", tf->tf_esp);
+		cprintf("  ss   0x----%04x\n", tf->tf_ss);
+	}
 }
 
-void
-print_regs(struct pushregs *regs) {
-    cprintf("  edi  0x%08x\n", regs->reg_edi);
-    cprintf("  esi  0x%08x\n", regs->reg_esi);
-    cprintf("  ebp  0x%08x\n", regs->reg_ebp);
-    cprintf("  oesp 0x%08x\n", regs->reg_oesp);
-    cprintf("  ebx  0x%08x\n", regs->reg_ebx);
-    cprintf("  edx  0x%08x\n", regs->reg_edx);
-    cprintf("  ecx  0x%08x\n", regs->reg_ecx);
-    cprintf("  eax  0x%08x\n", regs->reg_eax);
+void print_regs(struct pushregs *regs) {
+	cprintf("  edi  0x%08x\n", regs->reg_edi);
+	cprintf("  esi  0x%08x\n", regs->reg_esi);
+	cprintf("  ebp  0x%08x\n", regs->reg_ebp);
+	cprintf("  oesp 0x%08x\n", regs->reg_oesp);
+	cprintf("  ebx  0x%08x\n", regs->reg_ebx);
+	cprintf("  edx  0x%08x\n", regs->reg_edx);
+	cprintf("  ecx  0x%08x\n", regs->reg_ecx);
+	cprintf("  eax  0x%08x\n", regs->reg_eax);
 }
+
+static void switch_to_user();
+static void switch_to_kernel();
 
 /* trap_dispatch - dispatch based on what type of trap occurred */
-static void
-trap_dispatch(struct trapframe *tf) {
-    char c;
+static void trap_dispatch(struct trapframe *tf) {
+	char c;
 
-    switch (tf->tf_trapno) {
-    case IRQ_OFFSET + IRQ_TIMER:
-        /* LAB1 YOUR CODE : STEP 3 */
-        /* handle the timer interrupt */
-        /* (1) After a timer interrupt, you should record this event using a global variable (increase it), such as ticks in kern/driver/clock.c
+	switch (tf->tf_trapno) {
+		case IRQ_OFFSET + IRQ_TIMER:
+			/* LAB1 YOUR CODE : STEP 3 */
+			/* handle the timer interrupt */
+			/* (1) After a timer interrupt, you should record this event using a global variable (increase it), such as ticks in kern/driver/clock.c
          * (2) Every TICK_NUM cycle, you can print some info using a funciton, such as print_ticks().
          * (3) Too Simple? Yes, I think so!
          */
-        break;
-    case IRQ_OFFSET + IRQ_COM1:
-        c = cons_getc();
-        cprintf("serial [%03d] %c\n", c, c);
-        break;
-    case IRQ_OFFSET + IRQ_KBD:
-        c = cons_getc();
-        cprintf("kbd [%03d] %c\n", c, c);
-        break;
-    //LAB1 CHALLENGE 1 : YOUR CODE you should modify below codes.
-    case T_SWITCH_TOU:
-    case T_SWITCH_TOK:
-        panic("T_SWITCH_** ??\n");
-        break;
-    case IRQ_OFFSET + IRQ_IDE1:
-    case IRQ_OFFSET + IRQ_IDE2:
-        /* do nothing */
-        break;
-    default:
-        // in kernel, it must be a mistake
-        if ((tf->tf_cs & 3) == 0) {
-            print_trapframe(tf);
-            panic("unexpected trap in kernel.\n");
-        }
-    }
+			{
+				static int counter = 0;
+				while (++counter >= TICK_NUM) {
+					// print_ticks();
+				}
+			}
+			break;
+		case IRQ_OFFSET + IRQ_COM1:
+			c = cons_getc();
+			cprintf("serial [%03d] %c\n", c, c);
+			break;
+		case IRQ_OFFSET + IRQ_KBD:
+			c = cons_getc();
+			cprintf("kbd [%03d] %c\n", c, c);
+			break;
+		//LAB1 CHALLENGE 1 : YOUR CODE you should modify below codes.
+		case T_SWITCH_TOU: {
+			switch_to_user(tf);
+		} break;
+		case T_SWITCH_TOK: {
+			// switch_to_kernel(tf);
+		}
+		break;
+		case IRQ_OFFSET + IRQ_IDE1:
+		case IRQ_OFFSET + IRQ_IDE2:
+			/* do nothing */
+			break;
+		default:
+			// in kernel, it must be a mistake
+			if ((tf->tf_cs & 3) == 0) {
+				print_trapframe(tf);
+				panic("unexpected trap in kernel.\n");
+			}
+	}
 }
 
-/* *
+static trapframe tmp_k2u_frame;
+static void switch_to_user(struct trapframe *tf) {
+	struct trapframe *k2u_frame = &(tmp_k2u_frame);
+	*k2u_frame = *tf;
+	k2u_frame->tf_cs = USER_CS;
+	k2u_frame->tf_ss = USER_DS;
+	k2u_frame->tf_esp = (uint32_t)tf + sizeof(trapframe) - 0x8;
+	k2u_frame->tf_ds = USER_DS;
+	k2u_frame->tf_es = USER_DS;
+	k2u_frame->tf_fs = USER_DS;
+	k2u_frame->tf_gs = USER_DS;
+	k2u_frame->tf_eflags &= ~FL_IOPL_MASK;
+	k2u_frame->tf_eflags |= FL_IOPL_3;
+	((uint32_t *)tf)[-1] = k2u_frame;
+	cprintf("delta std: %d\n", tf->tf_esp - k2u_frame->tf_esp);
+	print_trapframe(k2u_frame);
+}
+
+static void switch_to_kernel(struct trapframe *tf) {
+	//  fake_trapframe = 
+}
+
+/* *`
  * trap - handles or dispatches an exception/interrupt. if and when trap() returns,
  * the code in kern/trap/trapentry.S restores the old CPU state saved in the
  * trapframe and then uses the iret instruction to return from the exception.
  * */
-void
-trap(struct trapframe *tf) {
-    // dispatch based on what type of trap occurred
-    trap_dispatch(tf);
+void trap(struct trapframe *tf) {
+	// dispatch based on what type of trap occurred
+	trap_dispatch(tf);
 }
-
