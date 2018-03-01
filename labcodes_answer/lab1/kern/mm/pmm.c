@@ -1,8 +1,8 @@
 #include <defs.h>
-#include <x86.h>
-#include <mmu.h>
 #include <memlayout.h>
+#include <mmu.h>
 #include <pmm.h>
+#include <x86.h>
 
 /* *
  * Task State Segment:

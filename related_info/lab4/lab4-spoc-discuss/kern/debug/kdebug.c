@@ -1,12 +1,12 @@
+#include <assert.h>
 #include <defs.h>
-#include <x86.h>
+#include <kdebug.h>
+#include <kmonitor.h>
 #include <stab.h>
 #include <stdio.h>
 #include <string.h>
 #include <sync.h>
-#include <kdebug.h>
-#include <kmonitor.h>
-#include <assert.h>
+#include <x86.h>
 
 #define STACKFRAME_DEPTH 20
 
@@ -104,7 +104,8 @@ static void stab_binsearch(const struct stab *stabs, int *region_left,
 	} else {
 		// find rightmost region containing 'addr'
 		l = *region_right;
-		for (; l > *region_left && stabs[l].n_type != type; l--) /* do nothing */;
+		for (; l > *region_left && stabs[l].n_type != type; l--) /* do nothing */
+			;
 		*region_left = l;
 	}
 }

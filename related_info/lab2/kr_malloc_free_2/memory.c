@@ -1,8 +1,8 @@
 #include "memory.h"
-#include <stdlib.h> /* for malloc */
-#include <stdio.h>	/* for printf (for debugging) */
-#include <string.h> /* for memcpy */
 #include <inttypes.h>
+#include <stdio.h>	/* for printf (for debugging) */
+#include <stdlib.h> /* for malloc */
+#include <string.h> /* for memcpy */
 
 const size_t g_totalMemorySize = 1024; /* bytes */
 unsigned char *g_heapsBase = NULL;

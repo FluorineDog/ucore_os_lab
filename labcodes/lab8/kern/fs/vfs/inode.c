@@ -1,12 +1,12 @@
+#include <assert.h>
+#include <atomic.h>
 #include <defs.h>
+#include <error.h>
+#include <inode.h>
+#include <kmalloc.h>
 #include <stdio.h>
 #include <string.h>
-#include <atomic.h>
 #include <vfs.h>
-#include <inode.h>
-#include <error.h>
-#include <assert.h>
-#include <kmalloc.h>
 
 /* *
  * __alloc_inode - alloc a inode structure and initialize in_type

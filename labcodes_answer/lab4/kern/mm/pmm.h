@@ -1,11 +1,11 @@
 #ifndef __KERN_MM_PMM_H__
 #define __KERN_MM_PMM_H__
 
-#include <defs.h>
-#include <mmu.h>
-#include <memlayout.h>
-#include <atomic.h>
 #include <assert.h>
+#include <atomic.h>
+#include <defs.h>
+#include <memlayout.h>
+#include <mmu.h>
 
 /* fork flags used in do_fork*/
 #define CLONE_VM 0x00000100			 // set if VM shared between processes

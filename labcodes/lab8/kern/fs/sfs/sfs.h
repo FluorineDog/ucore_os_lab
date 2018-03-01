@@ -2,8 +2,8 @@
 #define __KERN_FS_SFS_SFS_H__
 
 #include <defs.h>
-#include <mmu.h>
 #include <list.h>
+#include <mmu.h>
 #include <sem.h>
 #include <unistd.h>
 

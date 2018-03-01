@@ -1,11 +1,11 @@
-#include <defs.h>
-#include <wait.h>
-#include <atomic.h>
-#include <kmalloc.h>
-#include <sem.h>
-#include <proc.h>
-#include <sync.h>
 #include <assert.h>
+#include <atomic.h>
+#include <defs.h>
+#include <kmalloc.h>
+#include <proc.h>
+#include <sem.h>
+#include <sync.h>
+#include <wait.h>
 
 void sem_init(semaphore_t *sem, int value) {
 	sem->value = value;

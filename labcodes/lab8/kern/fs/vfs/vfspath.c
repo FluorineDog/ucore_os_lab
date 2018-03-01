@@ -1,12 +1,12 @@
+#include <assert.h>
 #include <defs.h>
-#include <string.h>
-#include <vfs.h>
+#include <error.h>
 #include <inode.h>
 #include <iobuf.h>
-#include <stat.h>
 #include <proc.h>
-#include <error.h>
-#include <assert.h>
+#include <stat.h>
+#include <string.h>
+#include <vfs.h>
 
 /*
  * get_cwd_nolock - retrieve current process's working directory. without lock protect

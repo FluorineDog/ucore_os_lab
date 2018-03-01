@@ -1,6 +1,6 @@
 #include <defs.h>
-#include <syscall.h>
 #include <stdio.h>
+#include <syscall.h>
 #include <ulib.h>
 
 void exit(int error_code) {

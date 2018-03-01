@@ -1,11 +1,11 @@
+#include <assert.h>
 #include <defs.h>
-#include <stdio.h>
-#include <trap.h>
-#include <picirq.h>
 #include <fs.h>
 #include <ide.h>
+#include <picirq.h>
+#include <stdio.h>
+#include <trap.h>
 #include <x86.h>
-#include <assert.h>
 
 #define ISA_DATA 0x00
 #define ISA_ERROR 0x01
@@ -67,7 +67,8 @@ static struct ide_device {
 
 static int ide_wait_ready(unsigned short iobase, bool check_error) {
 	int r;
-	while ((r = inb(iobase + ISA_STATUS)) & IDE_BSY) /* nothing */;
+	while ((r = inb(iobase + ISA_STATUS)) & IDE_BSY) /* nothing */
+		;
 	if (check_error && (r & (IDE_DF | IDE_ERR)) != 0) {
 		return -1;
 	}

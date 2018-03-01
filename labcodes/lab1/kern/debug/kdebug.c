@@ -1,9 +1,9 @@
 #include <defs.h>
-#include <x86.h>
+#include <kdebug.h>
 #include <stab.h>
 #include <stdio.h>
 #include <string.h>
-#include <kdebug.h>
+#include <x86.h>
 
 #define STACKFRAME_DEPTH 20
 

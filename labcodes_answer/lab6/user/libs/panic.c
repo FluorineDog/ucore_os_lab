@@ -1,8 +1,8 @@
 #include <defs.h>
+#include <error.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <ulib.h>
-#include <error.h>
 
 void __panic(const char *file, int line, const char *fmt, ...) {
 	// print the 'message'

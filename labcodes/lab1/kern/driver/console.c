@@ -1,10 +1,10 @@
 #include <defs.h>
-#include <x86.h>
-#include <stdio.h>
-#include <string.h>
 #include <kbdreg.h>
 #include <picirq.h>
+#include <stdio.h>
+#include <string.h>
 #include <trap.h>
+#include <x86.h>
 
 /* stupid I/O delay routine necessitated by historical PC design flaws */
 static void delay(void) {

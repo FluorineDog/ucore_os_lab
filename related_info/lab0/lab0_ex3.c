@@ -52,10 +52,10 @@ int main(void) {
 // other examples
 //ex1
 #if 0
-#include <stdlib.h>
 #include <stdio.h>
-#include <iostream>
+#include <stdlib.h>
 #include <cstring>
+#include <iostream>
 
 #define STS_TG32 0xF
 #define STS_IG32 0xE

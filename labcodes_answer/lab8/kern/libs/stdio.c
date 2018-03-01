@@ -1,6 +1,6 @@
+#include <console.h>
 #include <defs.h>
 #include <stdio.h>
-#include <console.h>
 #include <unistd.h>
 /* HIGH level console I/O */
 
@@ -65,6 +65,7 @@ int cputs(const char *str) {
 /* getchar - reads a single non-zero character from stdin */
 int getchar(void) {
 	int c;
-	while ((c = cons_getc()) == 0) /* do nothing */;
+	while ((c = cons_getc()) == 0) /* do nothing */
+		;
 	return c;
 }

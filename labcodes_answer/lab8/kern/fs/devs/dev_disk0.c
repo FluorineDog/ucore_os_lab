@@ -1,14 +1,14 @@
+#include <assert.h>
 #include <defs.h>
-#include <mmu.h>
-#include <sem.h>
+#include <dev.h>
+#include <error.h>
 #include <ide.h>
 #include <inode.h>
-#include <kmalloc.h>
-#include <dev.h>
-#include <vfs.h>
 #include <iobuf.h>
-#include <error.h>
-#include <assert.h>
+#include <kmalloc.h>
+#include <mmu.h>
+#include <sem.h>
+#include <vfs.h>
 
 #define DISK0_BLKSIZE PGSIZE
 #define DISK0_BUFSIZE (4 * DISK0_BLKSIZE)

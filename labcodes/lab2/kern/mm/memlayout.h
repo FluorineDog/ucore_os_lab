@@ -10,7 +10,8 @@
 #define SEG_UDATA 4
 #define SEG_TSS 5
 
-/* global descrptor numbers */
+/* global descriptor numbers */
+// dog: selectors
 #define GD_KTEXT ((SEG_KTEXT) << 3)	// kernel text
 #define GD_KDATA ((SEG_KDATA) << 3)	// kernel data
 #define GD_UTEXT ((SEG_UTEXT) << 3)	// user text
@@ -70,8 +71,8 @@
 
 #ifndef __ASSEMBLER__
 
-#include <defs.h>
 #include <atomic.h>
+#include <defs.h>
 #include <list.h>
 
 typedef uintptr_t pte_t;

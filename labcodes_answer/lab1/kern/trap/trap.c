@@ -1,14 +1,14 @@
-#include <defs.h>
-#include <mmu.h>
-#include <memlayout.h>
+#include <assert.h>
 #include <clock.h>
+#include <console.h>
+#include <defs.h>
+#include <kdebug.h>
+#include <memlayout.h>
+#include <mmu.h>
+#include <stdio.h>
+#include <string.h>
 #include <trap.h>
 #include <x86.h>
-#include <stdio.h>
-#include <assert.h>
-#include <console.h>
-#include <kdebug.h>
-#include <string.h>
 #define TICK_NUM 100
 
 static void print_ticks() {

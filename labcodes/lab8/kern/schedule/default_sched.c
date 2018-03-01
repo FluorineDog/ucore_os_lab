@@ -1,8 +1,8 @@
+#include <assert.h>
+#include <default_sched.h>
 #include <defs.h>
 #include <list.h>
 #include <proc.h>
-#include <assert.h>
-#include <default_sched.h>
 
 static void RR_init(struct run_queue *rq) {
 	list_init(&(rq->run_list));

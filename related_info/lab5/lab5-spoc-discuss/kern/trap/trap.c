@@ -1,20 +1,20 @@
-#include <defs.h>
-#include <mmu.h>
-#include <memlayout.h>
-#include <clock.h>
-#include <trap.h>
-#include <x86.h>
-#include <stdio.h>
 #include <assert.h>
+#include <clock.h>
 #include <console.h>
-#include <vmm.h>
-#include <swap.h>
-#include <kdebug.h>
-#include <unistd.h>
-#include <syscall.h>
+#include <defs.h>
 #include <error.h>
+#include <kdebug.h>
+#include <memlayout.h>
+#include <mmu.h>
 #include <sched.h>
+#include <stdio.h>
+#include <swap.h>
 #include <sync.h>
+#include <syscall.h>
+#include <trap.h>
+#include <unistd.h>
+#include <vmm.h>
+#include <x86.h>
 
 #define TICK_NUM 100
 

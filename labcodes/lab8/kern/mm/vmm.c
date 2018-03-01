@@ -1,13 +1,13 @@
-#include <vmm.h>
-#include <sync.h>
-#include <string.h>
 #include <assert.h>
-#include <stdio.h>
 #include <error.h>
-#include <pmm.h>
-#include <x86.h>
-#include <swap.h>
 #include <kmalloc.h>
+#include <pmm.h>
+#include <stdio.h>
+#include <string.h>
+#include <swap.h>
+#include <sync.h>
+#include <vmm.h>
+#include <x86.h>
 
 /* 
   vmm design include two parts: mm_struct (mm) & vma_struct (vma)

@@ -64,6 +64,8 @@ static inline uint8_t inb(uint16_t port) {
 }
 
 static inline void insl(uint32_t port, void *addr, int cnt) {
+	// dog: clear direction flag
+	// dog: rep read data to addr++
 	asm volatile(
 			"cld;"
 			"repne; insl;"

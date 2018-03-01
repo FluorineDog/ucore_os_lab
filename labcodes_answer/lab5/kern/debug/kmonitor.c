@@ -1,9 +1,9 @@
+#include <kdebug.h>
+#include <kmonitor.h>
+#include <mmu.h>
 #include <stdio.h>
 #include <string.h>
-#include <mmu.h>
 #include <trap.h>
-#include <kmonitor.h>
-#include <kdebug.h>
 
 /* *
  * Simple command-line kernel monitor useful for controlling the

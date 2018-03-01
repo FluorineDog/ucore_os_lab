@@ -1,11 +1,11 @@
-#include <unistd.h>
-#include <proc.h>
-#include <syscall.h>
-#include <trap.h>
-#include <stdio.h>
-#include <pmm.h>
 #include <assert.h>
 #include <clock.h>
+#include <pmm.h>
+#include <proc.h>
+#include <stdio.h>
+#include <syscall.h>
+#include <trap.h>
+#include <unistd.h>
 
 static int sys_exit(uint32_t arg[]) {
 	int error_code = (int)arg[0];

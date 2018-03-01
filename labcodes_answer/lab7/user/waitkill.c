@@ -1,5 +1,5 @@
-#include <ulib.h>
 #include <stdio.h>
+#include <ulib.h>
 
 void do_yield(void) {
 	yield();

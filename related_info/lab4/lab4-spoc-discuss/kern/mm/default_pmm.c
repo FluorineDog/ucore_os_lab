@@ -1,7 +1,7 @@
-#include <pmm.h>
-#include <list.h>
-#include <string.h>
 #include <default_pmm.h>
+#include <list.h>
+#include <pmm.h>
+#include <string.h>
 
 /* In the first fit algorithm, the allocator keeps a list of free blocks (known as the free list) and,
    on receiving a request for memory, scans along the list for the first block that is large enough to

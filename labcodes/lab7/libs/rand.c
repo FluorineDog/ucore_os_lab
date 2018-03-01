@@ -1,5 +1,5 @@
-#include <x86.h>
 #include <stdlib.h>
+#include <x86.h>
 
 static unsigned long long next = 1;
 

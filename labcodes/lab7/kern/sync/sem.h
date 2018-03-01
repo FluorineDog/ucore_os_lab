@@ -1,8 +1,8 @@
 #ifndef __KERN_SYNC_SEM_H__
 #define __KERN_SYNC_SEM_H__
 
-#include <defs.h>
 #include <atomic.h>
+#include <defs.h>
 #include <wait.h>
 
 typedef struct {

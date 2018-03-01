@@ -1,8 +1,8 @@
-#include <stdio.h>
+#include <assert.h>
+#include <monitor.h>
 #include <proc.h>
 #include <sem.h>
-#include <monitor.h>
-#include <assert.h>
+#include <stdio.h>
 
 #define N 5									 /* 哲学家数目 */
 #define LEFT (i - 1 + N) % N /* i的左邻号码 */

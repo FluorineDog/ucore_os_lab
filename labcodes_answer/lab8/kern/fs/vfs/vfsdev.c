@@ -1,15 +1,15 @@
+#include <assert.h>
 #include <defs.h>
+#include <dev.h>
+#include <error.h>
+#include <inode.h>
+#include <kmalloc.h>
+#include <list.h>
+#include <sem.h>
 #include <stdio.h>
 #include <string.h>
-#include <vfs.h>
-#include <dev.h>
-#include <inode.h>
-#include <sem.h>
-#include <list.h>
-#include <kmalloc.h>
 #include <unistd.h>
-#include <error.h>
-#include <assert.h>
+#include <vfs.h>
 
 // device info entry in vdev_list
 typedef struct {

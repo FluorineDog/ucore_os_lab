@@ -1,7 +1,7 @@
-#include <x86.h>
-#include <trap.h>
-#include <stdio.h>
 #include <picirq.h>
+#include <stdio.h>
+#include <trap.h>
+#include <x86.h>
 
 /* *
  * Support for time-related hardware gadgets - the 8253 timer,

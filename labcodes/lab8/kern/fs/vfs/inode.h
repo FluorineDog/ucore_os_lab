@@ -1,11 +1,11 @@
 #ifndef __KERN_FS_VFS_INODE_H__
 #define __KERN_FS_VFS_INODE_H__
 
+#include <assert.h>
+#include <atomic.h>
 #include <defs.h>
 #include <dev.h>
 #include <sfs.h>
-#include <atomic.h>
-#include <assert.h>
 
 struct stat;
 struct iobuf;

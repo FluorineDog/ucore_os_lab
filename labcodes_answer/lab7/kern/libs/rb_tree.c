@@ -1,9 +1,9 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <assert.h>
 #include <kmalloc.h>
 #include <rb_tree.h>
-#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /* rb_node_create - create a new rb_node */
 static inline rb_node *rb_node_create(void) {

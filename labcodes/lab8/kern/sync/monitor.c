@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include <monitor.h>
-#include <kmalloc.h>
 #include <assert.h>
+#include <kmalloc.h>
+#include <monitor.h>
+#include <stdio.h>
 
 // Initialize monitor.
 void monitor_init(monitor_t *mtp, size_t num_cv) {

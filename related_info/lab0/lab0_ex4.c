@@ -45,9 +45,9 @@ void main() {
 
 //ex2
 #if 0
-#include "list.h"
-#include "defs.h"
 #include <stdio.h>
+#include "defs.h"
+#include "list.h"
 
 struct page {
     int test;
@@ -122,10 +122,10 @@ int main(int argc, const char * argv[])
 //ex4
 #if 0
 //一个简单的随机生成一个长度的链表并计算长度的程序
-#include <iostream>
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 #include <ctime>
+#include <iostream>
 #include "list.h"
 
 using namespace std;
@@ -170,8 +170,8 @@ int main()
 //ex5
 #if 0
 // compile with -nostdinc and explicitly provide header file directories
-#include "list.h"
 #include <stdio.h>
+#include "list.h"
 
 struct MyDataType {
     list_entry_t list;
@@ -215,8 +215,8 @@ int main() {
 
 //ex6
 #if 0
-#include <stdio.h>
 #include <list.h>
+#include <stdio.h>
 
 int main() {
     struct list_entry first, second, third;
@@ -241,8 +241,8 @@ int main() {
 
 //ex7
 #if 0
-#include <stdio.h>
 #include <list.h>
+#include <stdio.h>
 
 struct Ints {
   int data;

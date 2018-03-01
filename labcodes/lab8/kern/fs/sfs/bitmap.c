@@ -1,9 +1,9 @@
-#include <defs.h>
-#include <string.h>
-#include <bitmap.h>
-#include <kmalloc.h>
-#include <error.h>
 #include <assert.h>
+#include <bitmap.h>
+#include <defs.h>
+#include <error.h>
+#include <kmalloc.h>
+#include <string.h>
 
 #define WORD_TYPE uint32_t
 #define WORD_BITS (sizeof(WORD_TYPE) * CHAR_BIT)

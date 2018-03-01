@@ -1,9 +1,9 @@
 #include <defs.h>
-#include <x86.h>
 #include <error.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <x86.h>
 
 /* *
  * Space or zero padding and a field width are supported for the numeric
@@ -276,7 +276,8 @@ void vprintfmt(void (*putch)(int, void *, int), int fd, void *putdat,
 			// unrecognized escape sequence - just print it literally
 			default:
 				putch('%', putdat, fd);
-				for (fmt--; fmt[-1] != '%'; fmt--) /* do nothing */;
+				for (fmt--; fmt[-1] != '%'; fmt--) /* do nothing */
+					;
 				break;
 		}
 	}

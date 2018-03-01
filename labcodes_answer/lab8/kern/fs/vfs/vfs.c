@@ -1,11 +1,11 @@
 #include <defs.h>
+#include <error.h>
+#include <inode.h>
+#include <kmalloc.h>
+#include <sem.h>
 #include <stdio.h>
 #include <string.h>
 #include <vfs.h>
-#include <inode.h>
-#include <sem.h>
-#include <kmalloc.h>
-#include <error.h>
 
 static semaphore_t bootfs_sem;
 static struct inode *bootfs_node = NULL;

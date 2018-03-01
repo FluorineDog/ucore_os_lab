@@ -1,7 +1,7 @@
 #include <defs.h>
-#include <stdio.h>
 #include <intr.h>
 #include <kmonitor.h>
+#include <stdio.h>
 
 static bool is_panic = 0;
 

@@ -1,9 +1,9 @@
-#include <sys/types.h>
+#include <stdio.h>
+#include <string.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#include <stdio.h>
+#include <sys/types.h>
 #include <unistd.h>
-#include <string.h>
 
 #define SHMSZ 1024
 

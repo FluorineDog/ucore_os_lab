@@ -1,9 +1,9 @@
 #ifndef __KERN_SYNC_SYNC_H__
 #define __KERN_SYNC_SYNC_H__
 
-#include <x86.h>
 #include <intr.h>
 #include <mmu.h>
+#include <x86.h>
 
 static inline bool __intr_save(void) {
 	if (read_eflags() & FL_IF) {

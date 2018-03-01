@@ -1,5 +1,5 @@
-#include "memory.h"
 #include <stdio.h>
+#include "memory.h"
 
 #define SAFE_FREE(ptr) \
 	if (ptr) dcfree(ptr)

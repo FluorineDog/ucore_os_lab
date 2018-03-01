@@ -1,17 +1,17 @@
+#include <assert.h>
+#include <bitmap.h>
 #include <defs.h>
-#include <string.h>
-#include <stdlib.h>
-#include <list.h>
-#include <stat.h>
-#include <kmalloc.h>
-#include <vfs.h>
 #include <dev.h>
-#include <sfs.h>
+#include <error.h>
 #include <inode.h>
 #include <iobuf.h>
-#include <bitmap.h>
-#include <error.h>
-#include <assert.h>
+#include <kmalloc.h>
+#include <list.h>
+#include <sfs.h>
+#include <stat.h>
+#include <stdlib.h>
+#include <string.h>
+#include <vfs.h>
 
 static const struct inode_ops sfs_node_dirops;	 // dir operations
 static const struct inode_ops sfs_node_fileops;	// file operations

@@ -1,10 +1,10 @@
-#include <defs.h>
-#include <string.h>
-#include <vfs.h>
-#include <inode.h>
-#include <unistd.h>
-#include <error.h>
 #include <assert.h>
+#include <defs.h>
+#include <error.h>
+#include <inode.h>
+#include <string.h>
+#include <unistd.h>
+#include <vfs.h>
 
 // open file in vfs, get/create inode for file with filename path.
 int vfs_open(char *path, uint32_t open_flags, struct inode **node_store) {

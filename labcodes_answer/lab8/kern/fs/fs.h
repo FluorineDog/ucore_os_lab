@@ -1,10 +1,10 @@
 #ifndef __KERN_FS_FS_H__
 #define __KERN_FS_FS_H__
 
+#include <atomic.h>
 #include <defs.h>
 #include <mmu.h>
 #include <sem.h>
-#include <atomic.h>
 
 #define SECTSIZE 512
 #define PAGE_NSECT (PGSIZE / SECTSIZE)

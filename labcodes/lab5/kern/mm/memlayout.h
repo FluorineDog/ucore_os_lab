@@ -99,8 +99,8 @@
 
 #ifndef __ASSEMBLER__
 
-#include <defs.h>
 #include <atomic.h>
+#include <defs.h>
 #include <list.h>
 
 typedef uintptr_t pte_t;

@@ -1,10 +1,10 @@
 #include <defs.h>
-#include <syscall.h>
-#include <stdio.h>
-#include <ulib.h>
-#include <stat.h>
-#include <string.h>
 #include <lock.h>
+#include <stat.h>
+#include <stdio.h>
+#include <string.h>
+#include <syscall.h>
+#include <ulib.h>
 
 static lock_t fork_lock = INIT_LOCK;
 

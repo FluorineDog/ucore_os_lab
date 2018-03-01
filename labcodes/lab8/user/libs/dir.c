@@ -1,11 +1,11 @@
 #include <defs.h>
+#include <dir.h>
+#include <dirent.h>
+#include <error.h>
+#include <file.h>
+#include <stat.h>
 #include <string.h>
 #include <syscall.h>
-#include <stat.h>
-#include <dirent.h>
-#include <file.h>
-#include <dir.h>
-#include <error.h>
 #include <unistd.h>
 
 DIR dir, *dirp = &dir;

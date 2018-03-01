@@ -1,14 +1,14 @@
+#include <clock.h>
+#include <console.h>
 #include <defs.h>
+#include <intr.h>
+#include <kdebug.h>
+#include <kmonitor.h>
+#include <picirq.h>
+#include <pmm.h>
 #include <stdio.h>
 #include <string.h>
-#include <console.h>
-#include <kdebug.h>
-#include <picirq.h>
 #include <trap.h>
-#include <clock.h>
-#include <intr.h>
-#include <pmm.h>
-#include <kmonitor.h>
 void kern_init(void) __attribute__((noreturn));
 void grade_backtrace(void);
 static void lab1_switch_test(void);

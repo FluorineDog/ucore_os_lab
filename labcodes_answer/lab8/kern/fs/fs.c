@@ -1,12 +1,12 @@
+#include <assert.h>
 #include <defs.h>
-#include <kmalloc.h>
-#include <sem.h>
-#include <vfs.h>
 #include <dev.h>
 #include <file.h>
-#include <sfs.h>
 #include <inode.h>
-#include <assert.h>
+#include <kmalloc.h>
+#include <sem.h>
+#include <sfs.h>
+#include <vfs.h>
 //called when init_main proc start
 void fs_init(void) {
 	vfs_init();

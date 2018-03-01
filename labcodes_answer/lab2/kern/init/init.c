@@ -1,13 +1,13 @@
-#include <defs.h>
-#include <stdio.h>
-#include <string.h>
+#include <clock.h>
 #include <console.h>
+#include <defs.h>
+#include <intr.h>
 #include <kdebug.h>
 #include <picirq.h>
-#include <trap.h>
-#include <clock.h>
-#include <intr.h>
 #include <pmm.h>
+#include <stdio.h>
+#include <string.h>
+#include <trap.h>
 
 int kern_init(void) __attribute__((noreturn));
 

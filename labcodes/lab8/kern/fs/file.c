@@ -1,15 +1,15 @@
+#include <assert.h>
 #include <defs.h>
-#include <string.h>
-#include <vfs.h>
-#include <proc.h>
-#include <file.h>
-#include <unistd.h>
-#include <iobuf.h>
-#include <inode.h>
-#include <stat.h>
 #include <dirent.h>
 #include <error.h>
-#include <assert.h>
+#include <file.h>
+#include <inode.h>
+#include <iobuf.h>
+#include <proc.h>
+#include <stat.h>
+#include <string.h>
+#include <unistd.h>
+#include <vfs.h>
 
 #define testfd(fd) ((fd) >= 0 && (fd) < FILES_STRUCT_NENTRY)
 

@@ -1,6 +1,6 @@
 #include <defs.h>
-#include <x86.h>
 #include <elf.h>
+#include <x86.h>
 
 /* *********************************************************************
  * This a dirt simple boot loader, whose sole job is to boot
@@ -35,7 +35,11 @@
 
 /* waitdisk - wait for disk ready */
 static void waitdisk(void) {
-	while ((inb(0x1F7) & 0xC0) != 0x40) /* do nothing */;
+	// dog: poll the Status port (0x1F7)
+	// dog: until bit 7 (BSY, value = 0x80) clears
+	// dog:       bit 6 (RDY, value = 0x40) sets
+	while ((inb(0x1F7) & 0xC0) != 0x40) /* do nothing */
+		;
 }
 
 /* readsect - read a single sector at @secno into @dst */
@@ -43,6 +47,8 @@ static void readsect(void *dst, uint32_t secno) {
 	// wait for disk to be ready
 	waitdisk();
 
+	// dog: base 0x1F0
+	// dog: READ SECTORS command, ready
 	outb(0x1F2, 1);	// count = 1
 	outb(0x1F3, secno & 0xFF);
 	outb(0x1F4, (secno >> 8) & 0xFF);
@@ -54,6 +60,7 @@ static void readsect(void *dst, uint32_t secno) {
 	waitdisk();
 
 	// read a sector
+	// dog: copy data from IO data port 0, rep ins(long)
 	insl(0x1F0, dst, SECTSIZE / 4);
 }
 
@@ -65,6 +72,8 @@ static void readseg(uintptr_t va, uint32_t count, uint32_t offset) {
 	uintptr_t end_va = va + count;
 
 	// round down to sector boundary
+	// dog: warning !!
+	// dog: may override data before va seg
 	va -= offset % SECTSIZE;
 
 	// translate from bytes to sectors; kernel starts at sector 1

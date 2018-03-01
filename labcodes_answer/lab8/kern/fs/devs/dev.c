@@ -1,10 +1,10 @@
 #include <defs.h>
-#include <string.h>
-#include <stat.h>
 #include <dev.h>
-#include <inode.h>
-#include <unistd.h>
 #include <error.h>
+#include <inode.h>
+#include <stat.h>
+#include <string.h>
+#include <unistd.h>
 
 /*
  * dev_open - Called for each open().

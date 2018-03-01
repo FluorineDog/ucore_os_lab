@@ -66,7 +66,8 @@ char *strcpy(char *dst, const char *src) {
 	return __strcpy(dst, src);
 #else
 	char *p = dst;
-	while ((*p++ = *src++) != '\0') /* nothing */;
+	while ((*p++ = *src++) != '\0') /* nothing */
+		;
 	return dst;
 #endif /* __HAVE_ARCH_STRCPY */
 }

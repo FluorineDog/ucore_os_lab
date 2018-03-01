@@ -1,17 +1,17 @@
-#include <proc.h>
-#include <kmalloc.h>
-#include <string.h>
-#include <sync.h>
-#include <pmm.h>
-#include <error.h>
-#include <sched.h>
+#include <assert.h>
 #include <elf.h>
-#include <vmm.h>
-#include <trap.h>
+#include <error.h>
+#include <kmalloc.h>
+#include <pmm.h>
+#include <proc.h>
+#include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
+#include <string.h>
+#include <sync.h>
+#include <trap.h>
 #include <unistd.h>
+#include <vmm.h>
 
 /* ------------- process/thread mechanism design&implementation -------------
 (an simplified Linux process/thread mechanism )

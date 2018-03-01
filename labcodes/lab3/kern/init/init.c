@@ -1,17 +1,17 @@
+#include <clock.h>
+#include <console.h>
 #include <defs.h>
+#include <ide.h>
+#include <intr.h>
+#include <kdebug.h>
+#include <kmonitor.h>
+#include <picirq.h>
+#include <pmm.h>
 #include <stdio.h>
 #include <string.h>
-#include <console.h>
-#include <kdebug.h>
-#include <picirq.h>
-#include <trap.h>
-#include <clock.h>
-#include <intr.h>
-#include <pmm.h>
-#include <vmm.h>
-#include <ide.h>
 #include <swap.h>
-#include <kmonitor.h>
+#include <trap.h>
+#include <vmm.h>
 
 int kern_init(void) __attribute__((noreturn));
 void grade_backtrace(void);

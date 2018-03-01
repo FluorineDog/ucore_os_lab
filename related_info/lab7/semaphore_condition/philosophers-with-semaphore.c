@@ -4,9 +4,9 @@
     at the same time, which would lead to deadlock. The Room sempahore
     can be enabled by specifying a command line argument.  */
 
-#include <stdio.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <stdio.h>
 typedef enum { False = 0, True = 1 } bool;
 
 #define N 5 /* Number of times each philosopher tries to eat */

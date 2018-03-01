@@ -1,16 +1,16 @@
+#include <assert.h>
 #include <defs.h>
-#include <stdio.h>
-#include <wait.h>
-#include <sync.h>
+#include <dev.h>
+#include <error.h>
+#include <inode.h>
+#include <iobuf.h>
 #include <proc.h>
 #include <sched.h>
-#include <dev.h>
-#include <vfs.h>
-#include <iobuf.h>
-#include <inode.h>
+#include <stdio.h>
+#include <sync.h>
 #include <unistd.h>
-#include <error.h>
-#include <assert.h>
+#include <vfs.h>
+#include <wait.h>
 
 #define STDIN_BUFSIZE 4096
 

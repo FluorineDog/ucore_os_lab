@@ -1,13 +1,13 @@
-#include <swap.h>
-#include <swapfs.h>
-#include <swap_fifo.h>
-#include <stdio.h>
-#include <string.h>
-#include <memlayout.h>
-#include <pmm.h>
-#include <mmu.h>
 #include <default_pmm.h>
 #include <kdebug.h>
+#include <memlayout.h>
+#include <mmu.h>
+#include <pmm.h>
+#include <stdio.h>
+#include <string.h>
+#include <swap.h>
+#include <swap_fifo.h>
+#include <swapfs.h>
 
 // the valid vaddr for check is between 0~CHECK_VALID_VADDR-1
 #define CHECK_VALID_VIR_PAGE_NUM 5

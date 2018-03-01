@@ -4,9 +4,9 @@
 #include <defs.h>
 #include <list.h>
 #include <memlayout.h>
-#include <sync.h>
 #include <proc.h>
 #include <sem.h>
+#include <sync.h>
 
 //pre define
 struct mm_struct;

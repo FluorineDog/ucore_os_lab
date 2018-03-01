@@ -1,8 +1,8 @@
-#include <defs.h>
-#include <string.h>
-#include <iobuf.h>
-#include <error.h>
 #include <assert.h>
+#include <defs.h>
+#include <error.h>
+#include <iobuf.h>
+#include <string.h>
 
 /* 
  * iobuf_init - init io buffer struct.

@@ -1,10 +1,10 @@
+#include <assert.h>
+#include <default_sched.h>
 #include <list.h>
-#include <sync.h>
 #include <proc.h>
 #include <sched.h>
 #include <stdio.h>
-#include <assert.h>
-#include <default_sched.h>
+#include <sync.h>
 
 // the list of timer
 static list_entry_t timer_list;

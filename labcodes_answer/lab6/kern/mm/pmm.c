@@ -1,16 +1,16 @@
+#include <default_pmm.h>
 #include <defs.h>
-#include <x86.h>
+#include <error.h>
+#include <kmalloc.h>
+#include <memlayout.h>
+#include <mmu.h>
+#include <pmm.h>
 #include <stdio.h>
 #include <string.h>
-#include <mmu.h>
-#include <memlayout.h>
-#include <pmm.h>
-#include <default_pmm.h>
-#include <sync.h>
-#include <error.h>
 #include <swap.h>
+#include <sync.h>
 #include <vmm.h>
-#include <kmalloc.h>
+#include <x86.h>
 
 /* *
  * Task State Segment:

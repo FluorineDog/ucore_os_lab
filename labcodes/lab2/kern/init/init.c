@@ -1,14 +1,14 @@
+#include <clock.h>
+#include <console.h>
 #include <defs.h>
+#include <intr.h>
+#include <kdebug.h>
+#include <kmonitor.h>
+#include <picirq.h>
+#include <pmm.h>
 #include <stdio.h>
 #include <string.h>
-#include <console.h>
-#include <kdebug.h>
-#include <picirq.h>
 #include <trap.h>
-#include <clock.h>
-#include <intr.h>
-#include <pmm.h>
-#include <kmonitor.h>
 
 int kern_init(void) __attribute__((noreturn));
 void grade_backtrace(void);
@@ -20,7 +20,7 @@ int kern_init(void) {
 
 	cons_init();	// init the console
 
-	const char *message = "(THU.CST) os is loading ...";
+	const char *message = "(DOG.CST) os is loading ...";
 	cprintf("%s\n\n", message);
 
 	print_kerninfo();
@@ -80,10 +80,12 @@ static void lab1_print_cur_status(void) {
 
 static void lab1_switch_to_user(void) {
 	//LAB1 CHALLENGE 1 : TODO
+	asm volatile("int %0;" ::"N"(T_SWITCH_TOU) : "cc", "memory");
 }
 
 static void lab1_switch_to_kernel(void) {
 	//LAB1 CHALLENGE 1 :  TODO
+	asm volatile("int %0;" ::"N"(T_SWITCH_TOK) : "cc", "memory");
 }
 
 static void lab1_switch_test(void) {

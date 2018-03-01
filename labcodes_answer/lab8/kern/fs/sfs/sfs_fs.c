@@ -1,17 +1,17 @@
+#include <assert.h>
+#include <bitmap.h>
 #include <defs.h>
-#include <stdio.h>
-#include <string.h>
-#include <kmalloc.h>
-#include <list.h>
-#include <fs.h>
-#include <vfs.h>
 #include <dev.h>
-#include <sfs.h>
+#include <error.h>
+#include <fs.h>
 #include <inode.h>
 #include <iobuf.h>
-#include <bitmap.h>
-#include <error.h>
-#include <assert.h>
+#include <kmalloc.h>
+#include <list.h>
+#include <sfs.h>
+#include <stdio.h>
+#include <string.h>
+#include <vfs.h>
 
 /*
  * sfs_sync - sync sfs's superblock and freemap in memroy into disk

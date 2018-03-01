@@ -1,6 +1,6 @@
 #include <defs.h>
-#include <x86.h>
 #include <elf.h>
+#include <x86.h>
 
 /* *********************************************************************
  * This a dirt simple boot loader, whose sole job is to boot
@@ -34,7 +34,8 @@ struct elfhdr *ELFHDR = ((struct elfhdr *)0x10000);	// scratch space
 
 /* waitdisk - wait for disk ready */
 static void waitdisk(void) {
-	while ((inb(0x1F7) & 0xC0) != 0x40) /* do nothing */;
+	while ((inb(0x1F7) & 0xC0) != 0x40) /* do nothing */
+		;
 }
 
 /* readsect - read a single sector at @secno into @dst */
