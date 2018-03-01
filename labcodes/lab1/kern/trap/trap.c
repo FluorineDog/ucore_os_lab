@@ -1,13 +1,14 @@
-#include <defs.h>
-#include <mmu.h>
-#include <memlayout.h>
+#include <assert.h>
 #include <clock.h>
+#include <console.h>
+#include <defs.h>
+#include <kdebug.h>
+#include <memlayout.h>
+#include <mmu.h>
+#include <stdio.h>
+#include <string.h>
 #include <trap.h>
 #include <x86.h>
-#include <stdio.h>
-#include <assert.h>
-#include <console.h>
-#include <kdebug.h>
 
 #define TICK_NUM 100
 
@@ -29,20 +30,24 @@ static struct gatedesc idt[256] = {{0}};
 
 static struct pseudodesc idt_pd = {sizeof(idt) - 1, (uintptr_t)idt};
 
-/* idt_init - initialize IDT to each of the entry points in kern/trap/vectors.S */
+/* idt_init - initialize IDT to each of the entry points in kern/trap/vectors.S
+ */
 void idt_init(void) {
 	/* LAB1 YOUR CODE : STEP 2 */
 	/* (1) Where are the entry addrs of each Interrupt Service Routine (ISR)?
-      *     All ISR's entry addrs are stored in __vectors. where is uintptr_t __vectors[] ?
-      *     __vectors[] is in kern/trap/vector.S which is produced by tools/vector.c
-      *     (try "make" command in lab1, then you will find vector.S in kern/trap DIR)
-      *     You can use  "extern uintptr_t __vectors[];" to define this extern variable which will be used later.
-      * (2) Now you should setup the entries of ISR in Interrupt Description Table (IDT).
-      *     Can you see idt[256] in this file? Yes, it's IDT! you can use SETGATE macro to setup each item of IDT
-      * (3) After setup the contents of IDT, you will let CPU know where is the IDT by using 'lidt' instruction.
-      *     You don't know the meaning of this instruction? just google it! and check the libs/x86.h to know more.
-      *     Notice: the argument of lidt is idt_pd. try to find it!
-      */
+   *     All ISR's entry addrs are stored in __vectors. where is uintptr_t
+   * __vectors[] ?
+   *     __vectors[] is in kern/trap/vector.S which is produced by
+   * tools/vector.c (try "make" command in lab1, then you will find vector.S in
+   * kern/trap DIR) You can use  "extern uintptr_t __vectors[];" to define
+   * this extern variable which will be used later. (2) Now you should setup
+   * the entries of ISR in Interrupt Description Table (IDT). Can you see
+   * idt[256] in this file? Yes, it's IDT! you can use SETGATE macro to
+   * setup each item of IDT (3) After setup the contents of IDT, you will let
+   * CPU know where is the IDT by using 'lidt' instruction. You don't know the
+   * meaning of this instruction? just google it! and check the libs/x86.h
+   * to know more. Notice: the argument of lidt is idt_pd. try to find it!
+   */
 	extern uintptr_t __vectors[];
 	for (int i = 0; i < sizeof(idt) / sizeof(idt[0]); ++i) {
 		SETGATE(idt[i], 0, KERNEL_CS, __vectors[i], DPL_KERNEL);
@@ -50,6 +55,8 @@ void idt_init(void) {
 	int usr_gates[] = {
 			T_SYSCALL,
 			T_SWITCH_TOK,
+			IRQ_OFFSET + IRQ_KBD,
+			IRQ_OFFSET + IRQ_COM1,
 	};
 	for (int k = 0; k < sizeof(usr_gates) / sizeof(usr_gates[0]); ++k) {
 		int i = usr_gates[k];
@@ -138,8 +145,8 @@ void print_regs(struct pushregs *regs) {
 	cprintf("  eax  0x%08x\n", regs->reg_eax);
 }
 
-static void switch_to_user();
-static void switch_to_kernel();
+static void switch_to_user(struct trapframe *tf);
+static void switch_to_kernel(struct trapframe *tf);
 
 /* trap_dispatch - dispatch based on what type of trap occurred */
 static void trap_dispatch(struct trapframe *tf) {
@@ -148,10 +155,11 @@ static void trap_dispatch(struct trapframe *tf) {
 		case IRQ_OFFSET + IRQ_TIMER:
 			/* LAB1 YOUR CODE : STEP 3 */
 			/* handle the timer interrupt */
-			/* (1) After a timer interrupt, you should record this event using a global variable (increase it), such as ticks in kern/driver/clock.c
-         * (2) Every TICK_NUM cycle, you can print some info using a funciton, such as print_ticks().
-         * (3) Too Simple? Yes, I think so!
-         */
+			/* (1) After a timer interrupt, you should record this event using a
+       * global variable (increase it), such as ticks in kern/driver/clock.c (2)
+       * Every TICK_NUM cycle, you can print some info using a funciton, such as
+       * print_ticks(). (3) Too Simple? Yes, I think so!
+       */
 			{
 				static volatile int counter = 0;
 				while (++counter >= TICK_NUM) {
@@ -160,15 +168,19 @@ static void trap_dispatch(struct trapframe *tf) {
 				}
 			}
 			break;
-		case IRQ_OFFSET + IRQ_COM1:
+		case IRQ_OFFSET + IRQ_COM1: {
 			c = cons_getc();
-			cprintf("serial [%03d] %c\n", c, c);
-			break;
-		case IRQ_OFFSET + IRQ_KBD:
+			volatile int r = trap_in_kernel(tf) ? 0 : 3;
+			cprintf("serial [%03d] %c at ring %d\n", c, c, r);
+		} break;
+		case IRQ_OFFSET + IRQ_KBD: {
 			c = cons_getc();
-			cprintf("kbd [%03d] %c\n", c, c);
-			break;
-		//LAB1 CHALLENGE 1 : YOUR CODE you should modify below codes.
+			int r = trap_in_kernel(tf) ? 0 : 3;
+			cprintf("kbd [%03d] %c at ring %d\n", c, c, r);
+			if (c == '0') switch_to_kernel(tf);
+			if (c == '3') switch_to_user(tf);
+		} break;
+		// LAB1 CHALLENGE 1 : YOUR CODE you should modify below codes.
 		case T_SWITCH_TOU: {
 			switch_to_user(tf);
 		} break;
@@ -190,6 +202,11 @@ static void trap_dispatch(struct trapframe *tf) {
 
 static trapframe tmp_k2u_frame;
 static void switch_to_user(struct trapframe *tf) {
+	int r = trap_in_kernel(tf) ? 0 : 3;
+	if (r == 3) {
+		return;
+	}
+	cprintf("sw %d to user\n", r);
 	struct trapframe *k2u_frame = &(tmp_k2u_frame);
 	*k2u_frame = *tf;
 	k2u_frame->tf_cs = USER_CS;
@@ -202,11 +219,14 @@ static void switch_to_user(struct trapframe *tf) {
 	k2u_frame->tf_eflags &= ~FL_IOPL_MASK;
 	k2u_frame->tf_eflags |= FL_IOPL_3;
 	((uint32_t *)tf)[-1] = (uint32_t)&tmp_k2u_frame;
-	cprintf("delta std: %d\n", tf->tf_esp - k2u_frame->tf_esp);
-	print_trapframe(k2u_frame);
 }
 
 static void switch_to_kernel(struct trapframe *tf) {
+	int r = trap_in_kernel(tf) ? 0 : 3;
+	if (r == 0) {
+		return;
+	}
+	cprintf("sw %d to kernel\n", r);
 	struct trapframe *u2k_frame = tf;
 	u2k_frame->tf_cs = KERNEL_CS;
 	u2k_frame->tf_ss = KERNEL_DS;
@@ -219,15 +239,18 @@ static void switch_to_kernel(struct trapframe *tf) {
 	uint32_t new_stack_top = tf->tf_esp - sizeof(trapframe) + 0x8;
 	// (uint32_t)tf + 0x8 is not correct, because it is at user stack
 	((uint32_t *)tf)[-1] = new_stack_top;
-	memmove(new_stack_top, u2k_frame, sizeof(trapframe) - 0x8);
+	memmove((void *)new_stack_top, u2k_frame, sizeof(trapframe) - 0x8);
 }
 
 /* *`
- * trap - handles or dispatches an exception/interrupt. if and when trap() returns,
- * the code in kern/trap/trapentry.S restores the old CPU state saved in the
- * trapframe and then uses the iret instruction to return from the exception.
+ * trap - handles or dispatches an exception/interrupt. if and when trap()
+ * returns, the code in kern/trap/trapentry.S restores the old CPU state saved
+ * in the trapframe and then uses the iret instruction to return from the
+ * exception.
  * */
 void trap(struct trapframe *tf) {
 	// dispatch based on what type of trap occurred
+	asm volatile("cli" ::: "cc", "memory");
 	trap_dispatch(tf);
+	asm volatile("sti" ::: "cc", "memory");
 }
