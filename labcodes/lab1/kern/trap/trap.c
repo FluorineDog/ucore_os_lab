@@ -153,8 +153,9 @@ static void trap_dispatch(struct trapframe *tf) {
          * (3) Too Simple? Yes, I think so!
          */
 			{
-				static int counter = 0;
+				static volatile int counter = 0;
 				while (++counter >= TICK_NUM) {
+					counter = 0;
 					print_ticks();
 				}
 			}
