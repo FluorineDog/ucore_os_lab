@@ -2,9 +2,7 @@
 
 int main(void);
 
-void
-umain(void) {
-    int ret = main();
-    exit(ret);
+void umain(void) {
+	int ret = main();
+	exit(ret);
 }
-

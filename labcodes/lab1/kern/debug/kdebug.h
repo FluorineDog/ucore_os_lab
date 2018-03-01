@@ -8,4 +8,3 @@ void print_stackframe(void);
 int print_debuginfo(uintptr_t eip);
 
 #endif /* !__KERN_DEBUG_KDEBUG_H__ */
-

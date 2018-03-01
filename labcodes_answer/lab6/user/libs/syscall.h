@@ -13,4 +13,3 @@ int sys_pgdir(void);
 void sys_lab6_set_priority(uint32_t priority);
 
 #endif /* !__USER_LIBS_SYSCALL_H__ */
-

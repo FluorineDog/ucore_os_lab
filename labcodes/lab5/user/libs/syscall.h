@@ -11,4 +11,3 @@ int sys_putc(int c);
 int sys_pgdir(void);
 
 #endif /* !__USER_LIBS_SYSCALL_H__ */
-

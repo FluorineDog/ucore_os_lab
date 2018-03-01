@@ -35,7 +35,7 @@
 
 /* waitdisk - wait for disk ready */
 static void waitdisk(void) {
-	// dog: poll the Status port (0x1F7) 
+	// dog: poll the Status port (0x1F7)
 	// dog: until bit 7 (BSY, value = 0x80) clears
 	// dog:       bit 6 (RDY, value = 0x40) sets
 	while ((inb(0x1F7) & 0xC0) != 0x40) /* do nothing */

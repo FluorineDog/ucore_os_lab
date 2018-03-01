@@ -4,26 +4,26 @@
 /* This file contains the definitions for memory management in our OS. */
 
 /* global segment number */
-#define SEG_KTEXT   1
-#define SEG_KDATA   2
-#define SEG_UTEXT   3
-#define SEG_UDATA   4
-#define SEG_TSS     5
+#define SEG_KTEXT 1
+#define SEG_KDATA 2
+#define SEG_UTEXT 3
+#define SEG_UDATA 4
+#define SEG_TSS 5
 
 /* global descrptor numbers */
-#define GD_KTEXT    ((SEG_KTEXT) << 3)      // kernel text
-#define GD_KDATA    ((SEG_KDATA) << 3)      // kernel data
-#define GD_UTEXT    ((SEG_UTEXT) << 3)      // user text
-#define GD_UDATA    ((SEG_UDATA) << 3)      // user data
-#define GD_TSS      ((SEG_TSS) << 3)        // task segment selector
+#define GD_KTEXT ((SEG_KTEXT) << 3)	// kernel text
+#define GD_KDATA ((SEG_KDATA) << 3)	// kernel data
+#define GD_UTEXT ((SEG_UTEXT) << 3)	// user text
+#define GD_UDATA ((SEG_UDATA) << 3)	// user data
+#define GD_TSS ((SEG_TSS) << 3)			 // task segment selector
 
-#define DPL_KERNEL  (0)
-#define DPL_USER    (3)
+#define DPL_KERNEL (0)
+#define DPL_USER (3)
 
-#define KERNEL_CS   ((GD_KTEXT) | DPL_KERNEL)
-#define KERNEL_DS   ((GD_KDATA) | DPL_KERNEL)
-#define USER_CS     ((GD_UTEXT) | DPL_USER)
-#define USER_DS     ((GD_UDATA) | DPL_USER)
+#define KERNEL_CS ((GD_KTEXT) | DPL_KERNEL)
+#define KERNEL_DS ((GD_KDATA) | DPL_KERNEL)
+#define USER_CS ((GD_UTEXT) | DPL_USER)
+#define USER_DS ((GD_UDATA) | DPL_USER)
 
 /* *
  * Virtual memory map:                                          Permissions
@@ -53,9 +53,9 @@
  * */
 
 /* All physical memory mapped at this address */
-#define KERNBASE            0xC0000000
-#define KMEMSIZE            0x38000000                  // the maximum amount of physical memory
-#define KERNTOP             (KERNBASE + KMEMSIZE)
+#define KERNBASE 0xC0000000
+#define KMEMSIZE 0x38000000	// the maximum amount of physical memory
+#define KERNTOP (KERNBASE + KMEMSIZE)
 
 /* *
  * Virtual page table. Entry PDX[VPT] in the PD (Page Directory) contains
@@ -63,10 +63,10 @@
  * table, which maps all the PTEs (Page Table Entry) containing the page mappings
  * for the entire virtual address space into that 4 Meg region starting at VPT.
  * */
-#define VPT                 0xFAC00000
+#define VPT 0xFAC00000
 
-#define KSTACKPAGE          2                           // # of pages in kernel stack
-#define KSTACKSIZE          (KSTACKPAGE * PGSIZE)       // sizeof kernel stack
+#define KSTACKPAGE 2											// # of pages in kernel stack
+#define KSTACKSIZE (KSTACKPAGE * PGSIZE)	// sizeof kernel stack
 
 #ifndef __ASSEMBLER__
 
@@ -78,17 +78,17 @@ typedef uintptr_t pte_t;
 typedef uintptr_t pde_t;
 
 // some constants for bios interrupt 15h AX = 0xE820
-#define E820MAX             20      // number of entries in E820MAP
-#define E820_ARM            1       // address range memory
-#define E820_ARR            2       // address range reserved
+#define E820MAX 20	// number of entries in E820MAP
+#define E820_ARM 1	// address range memory
+#define E820_ARR 2	// address range reserved
 
 struct e820map {
-    int nr_map;
-    struct {
-        uint64_t addr;
-        uint64_t size;
-        uint32_t type;
-    } __attribute__((packed)) map[E820MAX];
+	int nr_map;
+	struct {
+		uint64_t addr;
+		uint64_t size;
+		uint32_t type;
+	} __attribute__((packed)) map[E820MAX];
 };
 
 /* *
@@ -97,34 +97,32 @@ struct e820map {
  * that convert Page to other data types, such as phyical address.
  * */
 struct Page {
-    int ref;                        // page frame's reference counter
-    uint32_t flags;                 // array of flags that describe the status of the page frame
-    unsigned int property;          // the num of free block, used in first fit pm manager
-    list_entry_t page_link;         // free list link
+	int ref;				 // page frame's reference counter
+	uint32_t flags;	// array of flags that describe the status of the page frame
+	unsigned int property;	// the num of free block, used in first fit pm manager
+	list_entry_t page_link;	// free list link
 };
 
 /* Flags describing the status of a page frame */
-#define PG_reserved                 0       // the page descriptor is reserved for kernel or unusable
-#define PG_property                 1       // the member 'property' is valid
+#define PG_reserved 0	// the page descriptor is reserved for kernel or unusable
+#define PG_property 1	// the member 'property' is valid
 
-#define SetPageReserved(page)       set_bit(PG_reserved, &((page)->flags))
-#define ClearPageReserved(page)     clear_bit(PG_reserved, &((page)->flags))
-#define PageReserved(page)          test_bit(PG_reserved, &((page)->flags))
-#define SetPageProperty(page)       set_bit(PG_property, &((page)->flags))
-#define ClearPageProperty(page)     clear_bit(PG_property, &((page)->flags))
-#define PageProperty(page)          test_bit(PG_property, &((page)->flags))
+#define SetPageReserved(page) set_bit(PG_reserved, &((page)->flags))
+#define ClearPageReserved(page) clear_bit(PG_reserved, &((page)->flags))
+#define PageReserved(page) test_bit(PG_reserved, &((page)->flags))
+#define SetPageProperty(page) set_bit(PG_property, &((page)->flags))
+#define ClearPageProperty(page) clear_bit(PG_property, &((page)->flags))
+#define PageProperty(page) test_bit(PG_property, &((page)->flags))
 
 // convert list entry to page
-#define le2page(le, member)                 \
-    to_struct((le), struct Page, member)
+#define le2page(le, member) to_struct((le), struct Page, member)
 
 /* free_area_t - maintains a doubly linked list to record free (unused) pages */
 typedef struct {
-    list_entry_t free_list;         // the list header
-    unsigned int nr_free;           // # of free pages in this free list
+	list_entry_t free_list;	// the list header
+	unsigned int nr_free;		 // # of free pages in this free list
 } free_area_t;
 
 #endif /* !__ASSEMBLER__ */
 
 #endif /* !__KERN_MM_MEMLAYOUT_H__ */
-

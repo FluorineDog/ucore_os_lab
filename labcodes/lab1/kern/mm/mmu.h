@@ -117,7 +117,7 @@ struct segdesc {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 \
 	}
 
-// selector16 :: offset32 :: P 
+// selector16 :: offset32 :: P
 // entry of idt
 #define SEG(type, base, lim, dpl)                                          \
 	(struct segdesc) {                                                       \

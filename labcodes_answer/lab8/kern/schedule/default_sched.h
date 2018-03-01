@@ -6,4 +6,3 @@
 extern struct sched_class default_sched_class;
 
 #endif /* !__KERN_SCHEDULE_SCHED_RR_H__ */
-

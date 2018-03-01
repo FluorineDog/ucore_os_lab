@@ -6,8 +6,8 @@
 #include <wait.h>
 
 typedef struct {
-    int value;
-    wait_queue_t wait_queue;
+	int value;
+	wait_queue_t wait_queue;
 } semaphore_t;
 
 void sem_init(semaphore_t *sem, int value);
@@ -16,4 +16,3 @@ void down(semaphore_t *sem);
 bool try_down(semaphore_t *sem);
 
 #endif /* !__KERN_SYNC_SEM_H__ */
-

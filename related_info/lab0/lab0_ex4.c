@@ -3,27 +3,26 @@
 #include "list.h"
 
 struct entry {
-
-    list_entry_t node;
-    int num;
+	list_entry_t node;
+	int num;
 };
 
 int main() {
-    struct entry head;
-    list_entry_t* p = &head.node;
-    list_init(p);
-    head.num = 0;
-    int i;
-    for (i = 1; i != 10; i ++) {
-        struct entry * e = (struct entry *)malloc(sizeof(struct entry));
-        e->num = i;
-        list_add(p, &(e->node));
-        p = list_next(p);
-    }
-    //reverse list all node
-    while ((p = list_prev(p)) != &head.node)
-        printf("%d\n", ((struct entry *)p)->num);
-    return 0;
+	struct entry head;
+	list_entry_t *p = &head.node;
+	list_init(p);
+	head.num = 0;
+	int i;
+	for (i = 1; i != 10; i++) {
+		struct entry *e = (struct entry *)malloc(sizeof(struct entry));
+		e->num = i;
+		list_add(p, &(e->node));
+		p = list_next(p);
+	}
+	//reverse list all node
+	while ((p = list_prev(p)) != &head.node)
+		printf("%d\n", ((struct entry *)p)->num);
+	return 0;
 }
 
 // other examples
@@ -55,13 +54,12 @@ struct page {
     list_entry_t page_link;
 };
 
-#define le2page(le, member)  to_struct((le), struct page, member)
+#define le2page(le, member) to_struct((le), struct page, member)
 
-#define to_struct(ptr, type, member)                               \
-((type *)((char *)(ptr) - offsetof(type, member)))
+#define to_struct(ptr, type, member) \
+	((type *)((char *)(ptr)-offsetof(type, member)))
 
-#define offsetof(type, member)                                      \
-        ((size_t)(&((type *)0)->member))
+#define offsetof(type, member) ((size_t)(&((type *)0)->member))
 
 
 typedef struct {
@@ -169,7 +167,6 @@ int main()
 }
 #endif
 
-
 //ex5
 #if 0
 // compile with -nostdinc and explicitly provide header file directories
@@ -254,9 +251,8 @@ struct Ints {
 
 #define le2struct(ptr) to_struct((ptr), struct Ints, le)
 #define to_struct(ptr, type, member) \
-  ((type *)((char *)(ptr) - offsetof(type, member)))
-#define offsetof(type, member) \
-  ((size_t)(&((type *)0)->member))
+	((type *)((char *)(ptr)-offsetof(type, member)))
+#define offsetof(type, member) ((size_t)(&((type *)0)->member))
 
 int main() {
   struct Ints one, two, three, *now_int;
