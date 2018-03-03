@@ -243,9 +243,8 @@ struct taskstate {
 #define PTE_D 0x040		 // Dirty
 #define PTE_PS 0x080	 // Page Size
 #define PTE_MBZ 0x180	// Bits must be zero
-#define PTE_AVAIL \
-	0xE00	// Available for software use                                         \
-				 // The PTE_AVAIL bits aren't used by the kernel or interpreted by the \
+#define PTE_AVAIL 0xE00	// Available for software use                                         
+				 // The PTE_AVAIL bits aren't used by the kernel or interpreted by the 
 				 // hardware, so user processes are allowed to set them arbitrarily.
 
 #define PTE_USER (PTE_U | PTE_W | PTE_P)

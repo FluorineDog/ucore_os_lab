@@ -130,6 +130,9 @@ static void gdt_init(void) {
 
 //init_pmm_manager - initialize a pmm_manager instance
 static void init_pmm_manager(void) {
+	volatile int debug_to_modify = 1;
+	while (debug_to_modify)
+		;
 	pmm_manager = &default_pmm_manager;
 	cprintf("memory management: %s\n", pmm_manager->name);
 	pmm_manager->init();
@@ -173,7 +176,6 @@ size_t nr_free_pages(void) {
 static void page_init(void) {
 	struct e820map *memmap = (struct e820map *)(0x8000 + KERNBASE);
 	uint64_t maxpa = 0;
-
 	cprintf("e820map:\n");
 	int i;
 	for (i = 0; i < memmap->nr_map; i++) {
@@ -264,11 +266,11 @@ static void *boot_alloc_page(void) {
 //pmm_init - setup a pmm to manage physical memory, build PDT&PT to setup paging mechanism
 //         - check the correctness of pmm & paging mechanism, print PDT&PT
 void pmm_init(void) {
-	//We need to alloc/free the physical memory (granularity is 4KB or other size).
-	//So a framework of physical memory manager (struct pmm_manager)is defined in pmm.h
-	//First we should init a physical memory manager(pmm) based on the framework.
-	//Then pmm can alloc/free the physical memory.
-	//Now the first_fit/best_fit/worst_fit/buddy_system pmm are available.
+	// We need to alloc/free the physical memory (granularity is 4KB or other size).
+	// So a framework of physical memory manager (struct pmm_manager)is defined in pmm.h
+	// First we should init a physical memory manager(pmm) based on the framework.
+	// Then pmm can alloc/free the physical memory.
+	// Now the first_fit/best_fit/worst_fit/buddy_system pmm are available.
 	init_pmm_manager();
 
 	// detect physical memory space, reserve already used memory,
@@ -356,8 +358,8 @@ pte_t *get_pte(pde_t *pgdir, uintptr_t la, bool create) {
                           // (6) clear page content using memset
                           // (7) set page directory entry's permission
     }
-    return NULL;          // (8) return page table entry
 #endif
+	return NULL;	// (8) return page table entry
 }
 
 //get_page - get related Page struct for linear address la using PDT pgdir
