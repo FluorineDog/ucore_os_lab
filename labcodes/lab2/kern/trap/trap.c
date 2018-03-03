@@ -144,9 +144,6 @@ void print_regs(struct pushregs *regs) {
 	cprintf("  eax  0x%08x\n", regs->reg_eax);
 }
 
-static void switch_to_user(struct trapframe *tf);
-static void switch_to_kernel(struct trapframe *tf);
-
 /* trap_dispatch - dispatch based on what type of trap occurred */
 static void trap_dispatch(struct trapframe *tf) {
 	char c;
@@ -170,15 +167,11 @@ static void trap_dispatch(struct trapframe *tf) {
 			break;
 		case IRQ_OFFSET + IRQ_COM1: {
 			c = cons_getc();
-			volatile int r = trap_in_kernel(tf) ? 0 : 3;
-			cprintf("serial [%03d] %c at ring %d\n", c, c, r);
+			cprintf("serial [%03d] %c\n", c, c, r);
 		} break;
 		case IRQ_OFFSET + IRQ_KBD: {
 			c = cons_getc();
-			int r = trap_in_kernel(tf) ? 0 : 3;
-			cprintf("kbd [%03d] %c at ring %d\n", c, c, r);
-			if (c == '0') switch_to_kernel(tf);
-			if (c == '3') switch_to_user(tf);
+			cprintf("kbd [%03d] %c\n", c, c, r);
 		} break;
 		// LAB1 CHALLENGE 1 : YOUR CODE you should modify below codes.
 		case T_SWITCH_TOU: {
@@ -198,48 +191,6 @@ static void trap_dispatch(struct trapframe *tf) {
 				panic("unexpected trap in kernel.\n");
 			}
 	}
-}
-
-static trapframe tmp_k2u_frame;
-static void switch_to_user(struct trapframe *tf) {
-	int r = trap_in_kernel(tf) ? 0 : 3;
-	if (r == 3) {
-		return;
-	}
-	cprintf("sw %d to user%x\n", r, tf);
-	struct trapframe *k2u_frame = &(tmp_k2u_frame);
-	*k2u_frame = *tf;
-	k2u_frame->tf_cs = USER_CS;
-	k2u_frame->tf_ss = USER_DS;
-	k2u_frame->tf_esp = (uint32_t)tf + sizeof(trapframe) - 0x8;
-	k2u_frame->tf_ds = USER_DS;
-	k2u_frame->tf_es = USER_DS;
-	k2u_frame->tf_fs = USER_DS;
-	k2u_frame->tf_gs = USER_DS;
-	k2u_frame->tf_eflags &= ~FL_IOPL_MASK;
-	k2u_frame->tf_eflags |= FL_IOPL_3;
-	((uint32_t *)tf)[-1] = (uint32_t)&tmp_k2u_frame;
-}
-
-static void switch_to_kernel(struct trapframe *tf) {
-	int r = trap_in_kernel(tf) ? 0 : 3;
-	if (r == 0) {
-		return;
-	}
-	cprintf("sw %d to kernel\n", r);
-	struct trapframe *u2k_frame = tf;
-	u2k_frame->tf_cs = KERNEL_CS;
-	u2k_frame->tf_ss = KERNEL_DS;
-	u2k_frame->tf_ds = KERNEL_DS;
-	u2k_frame->tf_es = KERNEL_DS;
-	u2k_frame->tf_fs = KERNEL_DS;
-	u2k_frame->tf_gs = KERNEL_DS;
-	u2k_frame->tf_eflags &= ~FL_IOPL_MASK;
-	u2k_frame->tf_eflags |= FL_IOPL_0;
-	uint32_t new_stack_top = tf->tf_esp - sizeof(trapframe) + 0x8;
-	// (uint32_t)tf + 0x8 is not correct, because it is at user stack
-	((uint32_t *)tf)[-1] = new_stack_top;
-	memmove((void *)new_stack_top, u2k_frame, sizeof(trapframe) - 0x8);
 }
 
 /* *`
