@@ -167,18 +167,18 @@ static void trap_dispatch(struct trapframe *tf) {
 			break;
 		case IRQ_OFFSET + IRQ_COM1: {
 			c = cons_getc();
-			cprintf("serial [%03d] %c\n", c, c, r);
+			cprintf("serial [%03d] %c\n", c, c);
 		} break;
 		case IRQ_OFFSET + IRQ_KBD: {
 			c = cons_getc();
-			cprintf("kbd [%03d] %c\n", c, c, r);
+			cprintf("kbd [%03d] %c\n", c, c);
 		} break;
 		// LAB1 CHALLENGE 1 : YOUR CODE you should modify below codes.
 		case T_SWITCH_TOU: {
-			switch_to_user(tf);
+		//	switch_to_user(tf);
 		} break;
 		case T_SWITCH_TOK: {
-			switch_to_kernel(tf);
+		//	switch_to_kernel(tf);
 		} break;
 		case IRQ_OFFSET + IRQ_IDE1:
 		case IRQ_OFFSET + IRQ_IDE2:

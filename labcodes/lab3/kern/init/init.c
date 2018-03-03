@@ -23,7 +23,7 @@ int kern_init(void) {
 
 	cons_init();	// init the console
 
-	const char *message = "(THU.CST) os is loading ...";
+	const char *message = "(DOG.CST) os is loading ...";
 	cprintf("%s\n\n", message);
 
 	print_kerninfo();
@@ -88,10 +88,12 @@ static void lab1_print_cur_status(void) {
 
 static void lab1_switch_to_user(void) {
 	//LAB1 CHALLENGE 1 : TODO
+	asm volatile("int %0;" ::"N"(T_SWITCH_TOU) : "cc", "memory");
 }
 
 static void lab1_switch_to_kernel(void) {
 	//LAB1 CHALLENGE 1 :  TODO
+	asm volatile("int %0;" ::"N"(T_SWITCH_TOK) : "cc", "memory");
 }
 
 static void lab1_switch_test(void) {
