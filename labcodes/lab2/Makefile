@@ -2,6 +2,7 @@ PROJ	:= 5
 EMPTY	:=
 SPACE	:= $(EMPTY) $(EMPTY)
 SLASH	:= /
+
 V       := @
 #need llvm/cang-3.5+
 #USELLVM := 1
@@ -45,15 +46,15 @@ endif
 # define compiler and flags
 ifndef  USELLVM
 HOSTCC		:= gcc
-HOSTCFLAGS	:= -g -Wall -O2 
+HOSTCFLAGS	:= -g -Wall -O2
 CC		:= $(GCCPREFIX)gcc
-CFLAGS	:= -fno-builtin -Wall -ggdb -m32 -gstabs -nostdinc $(DEFS) -Wno-gnu-designator 
+CFLAGS	:= -fno-builtin -Wall -ggdb -m32 -gstabs -nostdinc $(DEFS)
 CFLAGS	+= $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 else
 HOSTCC		:= clang
-HOSTCFLAGS	:= -g -Wall -O0
+HOSTCFLAGS	:= -g -Wall -O2
 CC		:= clang
-CFLAGS	:= -fno-builtin -Wall -g -m32 -mno-sse -nostdinc $(DEFS) -Wno-gnu-designator 
+CFLAGS	:= -fno-builtin -Wall -g -m32 -mno-sse -nostdinc $(DEFS)
 CFLAGS	+= $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 endif
 
@@ -241,8 +242,7 @@ qemu-nox: targets
 TERMINAL := gnome-terminal
 
 debug: $(UCOREIMG)
-	# $(V)$(QEMU) -S -s -parallel stdio $(QEMUOPTS) -serial null &
-	$(V)$(QEMU) -S -s -parallel stdio -hda $< -serial null &
+	$(V)$(QEMU) -S -s -parallel stdio $(QEMUOPTS) -serial null &
 	$(V)sleep 2
 	$(V)$(TERMINAL) -e "$(GDB) -q -x tools/gdbinit"
 
@@ -269,7 +269,7 @@ touch:
 	$(V)$(foreach f,$(TOUCH_FILES),$(TOUCH) $(f))
 
 print-%:
-	@echo $($(shell eget_ptecho $(patsubst print-%,%,$@) | $(TR) [a-z] [A-Z]))
+	@echo $($(shell echo $(patsubst print-%,%,$@) | $(TR) [a-z] [A-Z]))
 
 .PHONY: clean distclean handin tags
 clean:

@@ -103,7 +103,7 @@ struct Page {
 	unsigned int property;	// the num of free block, used in first fit pm manager
 	list_entry_t page_link;	// free list link
 };
-
+typedef struct Page Page;
 /* Flags describing the status of a page frame */
 // if this bit=1: the Page is reserved for kernel, cannot be used in alloc/free_pages; otherwise, this bit=0
 #define PG_reserved 0

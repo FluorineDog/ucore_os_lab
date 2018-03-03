@@ -206,7 +206,7 @@ static void switch_to_user(struct trapframe *tf) {
 	if (r == 3) {
 		return;
 	}
-	cprintf("sw %d to user\n", r);
+	cprintf("sw %d to user%x\n", r, tf);
 	struct trapframe *k2u_frame = &(tmp_k2u_frame);
 	*k2u_frame = *tf;
 	k2u_frame->tf_cs = USER_CS;
