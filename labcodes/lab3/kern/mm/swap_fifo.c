@@ -43,7 +43,9 @@ static int _fifo_map_swappable(struct mm_struct *mm, uintptr_t addr,
 															 struct Page *page, int swap_in) {
 	list_entry_t *head = (list_entry_t *)mm->sm_priv;
 	list_entry_t *entry = &(page->pra_page_link);
-
+	cprintf("dog_insert %x\n", addr);
+	
+	page->pra_vaddr = addr;
 	assert(entry != NULL && head != NULL);
 	//record the page access situlation
 	/*LAB3 EXERCISE 2: YOUR CODE*/
@@ -67,8 +69,9 @@ static int _fifo_swap_out_victim(struct mm_struct *mm, struct Page **ptr_page,
 	//(2)  set the addr of addr of this page to ptr_page
 	list_entry_t *first_entry = list_next(head);
 	Page* page = le2page(first_entry, pra_page_link);
-	
 	*ptr_page = page;
+	list_del(first_entry);	
+	cprintf("dog_pop %x\n", PADDR(page2kva(page)));
 	return 0;
 }
 
@@ -96,6 +99,7 @@ static int _fifo_check_swap(void) {
 	assert(pgfault_num == 6);
 	cprintf("write Virt Page b in fifo_check_swap\n");
 	*(unsigned char *)0x2000 = 0x0b;
+	// cprintf("%d", pgfault_num);
 	assert(pgfault_num == 7);
 	cprintf("write Virt Page c in fifo_check_swap\n");
 	*(unsigned char *)0x3000 = 0x0c;

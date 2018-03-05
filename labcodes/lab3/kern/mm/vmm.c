@@ -337,11 +337,12 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr) {
 		perm |= PTE_W;
 	}
 	addr = ROUNDDOWN(addr, PGSIZE);
-
 	ret = -E_NO_MEM;
-
 	pte_t *ptep = NULL;
-	/*LAB3 EXERCISE 1: YOUR CODE
+	ptep = get_pte(mm->pgdir, addr, 1);
+	if (*ptep == 0) {
+		//(2) if the phy addr isn't exist, then alloc a page & map the phy addr with logical addr
+		/*LAB3 EXERCISE 1: YOUR CODE
     * Maybe you want help comment, BELOW comments can help you finish the code
     *
     * Some Useful MACROs and DEFINEs, you can use them in below implementation.
@@ -358,18 +359,8 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr) {
     *   mm->pgdir : the PDT of these vma
     *
     */
-	/*LAB3 EXERCISE 1: YOUR CODE*/
-	//(1) try to find a pte, if pte's PT(Page Table) isn't existed, then create a PT.
-
-	ptep = get_pte(mm->pgdir, addr, 1);
-	if (*ptep == 0) {
-		//(2) if the phy addr isn't exist, then alloc a page & map the phy addr with logical addr
-		void* kva = alloc_page();
-		*ptep = PADDR(kva) | PTE_U | PTE_A;
-		if(VM_WRITE & vma->vm_flags){
-
-			*ptep |= PTE_W;
-		}
+		/*LAB3 EXERCISE 1: YOUR CODE*/
+		pgdir_alloc_page(mm->pgdir, addr, perm);
 		return 0;
 	} else {
 		/*LAB3 EXERCISE 2: YOUR CODE
@@ -385,6 +376,12 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr) {
     */
 		if (swap_init_ok) {
 			struct Page *page = NULL;
+			ret = swap_in(mm, addr, &page);
+			assert(!ret);
+			ret = page_insert(mm->pgdir, page, addr, perm);
+			assert(!ret);
+			ret = swap_map_swappable(mm, addr, page, 1);
+			assert(!ret);
 			//(1）According to the mm AND addr, try to load the content of right disk page
 			//    into the memory which page managed.
 			//(2) According to the mm, addr AND page, setup the map of phy addr <---> logical addr
