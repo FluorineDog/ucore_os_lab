@@ -358,15 +358,21 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr) {
     *   mm->pgdir : the PDT of these vma
     *
     */
-#if 0
-    /*LAB3 EXERCISE 1: YOUR CODE*/
-    ptep = ???              //(1) try to find a pte, if pte's PT(Page Table) isn't existed, then create a PT.
-    if (*ptep == 0) {
-                            //(2) if the phy addr isn't exist, then alloc a page & map the phy addr with logical addr
+	/*LAB3 EXERCISE 1: YOUR CODE*/
+	//(1) try to find a pte, if pte's PT(Page Table) isn't existed, then create a PT.
 
-    }
-    else {
-    /*LAB3 EXERCISE 2: YOUR CODE
+	ptep = get_pte(mm->pgdir, addr, 1);
+	if (*ptep == 0) {
+		//(2) if the phy addr isn't exist, then alloc a page & map the phy addr with logical addr
+		void* kva = alloc_page();
+		*ptep = PADDR(kva) | PTE_U | PTE_A;
+		if(VM_WRITE & vma->vm_flags){
+
+			*ptep |= PTE_W;
+		}
+		return 0;
+	} else {
+		/*LAB3 EXERCISE 2: YOUR CODE
     * Now we think this pte is a  swap entry, we should load data from disk to a page with phy addr,
     * and map the phy addr with logical addr, trigger swap manager to record the access situation of this page.
     *
@@ -377,19 +383,17 @@ int do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr) {
     *    page_insert ： build the map of phy addr of an Page with the linear addr la
     *    swap_map_swappable ： set the page swappable
     */
-        if(swap_init_ok) {
-            struct Page *page=NULL;
-                                    //(1）According to the mm AND addr, try to load the content of right disk page
-                                    //    into the memory which page managed.
-                                    //(2) According to the mm, addr AND page, setup the map of phy addr <---> logical addr
-                                    //(3) make the page swappable.
-        }
-        else {
-            cprintf("no swap_init_ok but ptep is %x, failed\n",*ptep);
-            goto failed;
-        }
-   }
-#endif
+		if (swap_init_ok) {
+			struct Page *page = NULL;
+			//(1）According to the mm AND addr, try to load the content of right disk page
+			//    into the memory which page managed.
+			//(2) According to the mm, addr AND page, setup the map of phy addr <---> logical addr
+			//(3) make the page swappable.
+		} else {
+			cprintf("no swap_init_ok but ptep is %x, failed\n", *ptep);
+			goto failed;
+		}
+	}
 	ret = 0;
 failed:
 	return ret;
