@@ -35,16 +35,34 @@ static struct pseudodesc idt_pd = {sizeof(idt) - 1, (uintptr_t)idt};
 void idt_init(void) {
 	/* LAB1 YOUR CODE : STEP 2 */
 	/* (1) Where are the entry addrs of each Interrupt Service Routine (ISR)?
-      *     All ISR's entry addrs are stored in __vectors. where is uintptr_t __vectors[] ?
-      *     __vectors[] is in kern/trap/vector.S which is produced by tools/vector.c
-      *     (try "make" command in lab1, then you will find vector.S in kern/trap DIR)
-      *     You can use  "extern uintptr_t __vectors[];" to define this extern variable which will be used later.
-      * (2) Now you should setup the entries of ISR in Interrupt Description Table (IDT).
-      *     Can you see idt[256] in this file? Yes, it's IDT! you can use SETGATE macro to setup each item of IDT
-      * (3) After setup the contents of IDT, you will let CPU know where is the IDT by using 'lidt' instruction.
-      *     You don't know the meaning of this instruction? just google it! and check the libs/x86.h to know more.
-      *     Notice: the argument of lidt is idt_pd. try to find it!
-      */
+   *     All ISR's entry addrs are stored in __vectors. where is uintptr_t
+   * __vectors[] ?
+   *     __vectors[] is in kern/trap/vector.S which is produced by
+   * tools/vector.c (try "make" command in lab1, then you will find vector.S in
+   * kern/trap DIR) You can use  "extern uintptr_t __vectors[];" to define
+   * this extern variable which will be used later. (2) Now you should setup
+   * the entries of ISR in Interrupt Description Table (IDT). Can you see
+   * idt[256] in this file? Yes, it's IDT! you can use SETGATE macro to
+   * setup each item of IDT (3) After setup the contents of IDT, you will let
+   * CPU know where is the IDT by using 'lidt' instruction. You don't know the
+   * meaning of this instruction? just google it! and check the libs/x86.h
+   * to know more. Notice: the argument of lidt is idt_pd. try to find it!
+   */
+	extern uintptr_t __vectors[];
+	for (int i = 0; i < sizeof(idt) / sizeof(idt[0]); ++i) {
+		SETGATE(idt[i], 0, KERNEL_CS, __vectors[i], DPL_KERNEL);
+	}
+	int usr_gates[] = {
+			T_SYSCALL,
+			T_SWITCH_TOK,
+			IRQ_OFFSET + IRQ_KBD,
+			IRQ_OFFSET + IRQ_COM1,
+	};
+	for (int k = 0; k < sizeof(usr_gates) / sizeof(usr_gates[0]); ++k) {
+		int i = usr_gates[k];
+		SETGATE(idt[i], 0, KERNEL_CS, __vectors[i], DPL_USER);
+	}
+	lidt(&idt_pd);
 }
 
 static const char *trapname(int trapno) {
