@@ -101,6 +101,9 @@ static struct proc_struct *alloc_proc(void) {
      *       uint32_t flags;                             // Process flag
      *       char name[PROC_NAME_LEN + 1];               // Process name
      */
+		memset(proc, 0, sizeof(struct proc_struct));
+		proc->state = PROC_UNINIT;
+		proc->cr3 = boot_cr3;
 	}
 	return proc;
 }
@@ -161,6 +164,7 @@ void proc_run(struct proc_struct *proc) {
 		{
 			current = proc;
 			load_esp0(next->kstack + KSTACKSIZE);
+			cprintf("%x", next->cr3);
 			lcr3(next->cr3);
 			switch_to(&(prev->context), &(next->context));
 		}
@@ -177,6 +181,7 @@ static void forkret(void) {
 
 // hash_proc - add proc into proc hash_list
 static void hash_proc(struct proc_struct *proc) {
+	// dog; linked_hash_table
 	list_add(hash_list + pid_hashfn(proc->pid), &(proc->hash_link));
 }
 
@@ -252,7 +257,6 @@ static void copy_thread(struct proc_struct *proc, uintptr_t esp,
  */
 int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
 	int ret = -E_NO_FREE_PROC;
-	struct proc_struct *proc;
 	if (nr_process >= MAX_PROCESS) {
 		goto fork_out;
 	}
@@ -282,6 +286,15 @@ int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
 	//    5. insert proc_struct into hash_list && proc_list
 	//    6. call wakeup_proc to make the new child process RUNNABLE
 	//    7. set ret vaule using child proc's pid
+	struct proc_struct* proc = alloc_proc();
+	proc->pid = get_pid();
+	setup_kstack(proc);
+	copy_mm(clone_flags, proc);
+	copy_thread(proc, stack, tf);
+	list_add(hash_list + pid_hashfn(proc->pid), &proc->hash_link);
+	list_add(&proc_list, &proc->list_link);
+	wakeup_proc(proc);
+	return proc->pid;
 fork_out:
 	return ret;
 
