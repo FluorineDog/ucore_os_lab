@@ -532,8 +532,13 @@ int copy_range(pde_t *to, pde_t *from, uintptr_t start, uintptr_t end,
          * (1) find src_kvaddr: the kernel virtual address of page
          * (2) find dst_kvaddr: the kernel virtual address of npage
          * (3) memory copy from src_kvaddr to dst_kvaddr, size is PGSIZE
-         * (4) build the map of phy addr of  nage with the linear addr start
+         * (4) build the map of phy addr of npage with the linear addr start
          */
+			void* src_kvaddr = page2kva(page);
+			void* dst_kvaddr = page2kva(npage);
+			memcpy(dst_kvaddr, src_kvaddr, PGSIZE);
+			int status = page_insert(boot_pgdir, npage, start, perm);
+			assert(status == 0);
 			assert(ret == 0);
 		}
 		start += PGSIZE;
@@ -604,7 +609,7 @@ struct Page *pgdir_alloc_page(pde_t *pgdir, uintptr_t la, uint32_t perm) {
 								//swap_map_swappable(current->mm, la, page, 0);
 								//page->pra_vaddr=la;
 								//assert(page_ref(page) == 1);
-				//panic("pgdir_alloc_page: no pages. now current is existed, should fix it in the future\n");
+				// panic("pgdir_alloc_page: no pages. now current is existed, should fix it in the future\n");
 			}
 		}
 	}
