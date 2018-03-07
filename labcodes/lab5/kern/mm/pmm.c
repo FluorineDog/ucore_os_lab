@@ -448,9 +448,9 @@ static inline void page_remove_pte(pde_t *pgdir, uintptr_t la, pte_t *ptep) {
 	Page *page = pte2page(*ptep);
 	int count = page_ref_dec(page);
 	if (count == 0) {
-		tlb_invalidate(pgdir, la);
 		free_page(page);
 		*ptep = 0;
+		tlb_invalidate(pgdir, la);
 	}
 }
 
@@ -537,7 +537,7 @@ int copy_range(pde_t *to, pde_t *from, uintptr_t start, uintptr_t end,
 			void* src_kvaddr = page2kva(page);
 			void* dst_kvaddr = page2kva(npage);
 			memcpy(dst_kvaddr, src_kvaddr, PGSIZE);
-			int status = page_insert(boot_pgdir, npage, start, perm);
+			int status = page_insert(to, npage, start, perm);
 			assert(status == 0);
 			assert(ret == 0);
 		}

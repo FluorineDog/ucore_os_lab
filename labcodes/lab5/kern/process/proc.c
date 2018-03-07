@@ -616,12 +616,12 @@ static int load_icode(unsigned char *binary, size_t size) {
      *          tf_eflags should be set to enable computer to produce Interrupt
      */
 	tf->tf_cs = USER_CS;
+	tf->tf_eip = elf->e_entry;
 	tf->tf_ds = USER_DS;
 	tf->tf_es = USER_DS;
 	tf->tf_fs = USER_DS;
 	tf->tf_ss = USER_DS;
 	tf->tf_esp = USTACKTOP;
-	tf->tf_eip = elf->e_entry;
 	tf->tf_eflags |= FL_IF;
 	ret = 0;
 out:
