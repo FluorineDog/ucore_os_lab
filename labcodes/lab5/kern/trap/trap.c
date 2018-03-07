@@ -230,8 +230,6 @@ static void trap_dispatch(struct trapframe *tf) {
          */
 			ticks++;
 			if (ticks >= TICK_NUM) {
-				print_ticks();
-				cprintf("fuck\n");
 				assert(current != NULL);
 				ticks = 0;
 				current->need_resched = 1;
