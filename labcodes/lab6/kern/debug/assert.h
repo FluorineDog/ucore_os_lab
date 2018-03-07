@@ -4,11 +4,11 @@
 #include <defs.h>
 
 void __warn(const char *file, int line, const char *fmt, ...);
-void __noreturn __panic(const char *file, int line, const char *fmt, ...);
+void __noreturn __panic(const char *file, const char* function, int line, const char *fmt, ...);
 
 #define warn(...) __warn(__FILE__, __LINE__, __VA_ARGS__)
 
-#define panic(...) __panic(__FILE__, __LINE__, __VA_ARGS__)
+#define panic(...) __panic(__FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define assert(x)                        \
 	do {                                   \
