@@ -445,9 +445,9 @@ static inline void page_remove_pte(pde_t *pgdir, uintptr_t la, pte_t *ptep) {
 	Page *page = pte2page(*ptep);
 	int count = page_ref_dec(page);
 	if (count == 0) {
-		tlb_invalidate(pgdir, la);
 		free_page(page);
 		*ptep = 0;
+		tlb_invalidate(pgdir, la);
 	}
 }
 
