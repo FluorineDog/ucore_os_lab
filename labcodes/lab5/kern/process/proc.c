@@ -103,6 +103,7 @@ static struct proc_struct *alloc_proc(void) {
      *       char name[PROC_NAME_LEN + 1];               // Process name
      */
 		memset(proc, 0, sizeof(struct proc_struct));
+		proc->pid = -1;
 		proc->state = PROC_UNINIT;
 		proc->cr3 = boot_cr3;
 
@@ -113,8 +114,7 @@ static struct proc_struct *alloc_proc(void) {
      *       struct proc_struct *cptr, *yptr, *optr;     // relations between processes
 	 */
 
-		// nothing here intentionally	
-
+		// nothing here intentionally
 	}
 	return proc;
 }
@@ -381,11 +381,11 @@ int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
 	//    5. insert proc_struct into hash_list && proc_list
 	//    6. call wakeup_proc to make the new child process RUNNABLE
 	//    7. set ret vaule using child proc's pid
+	cprintf("fork begin\n");
 	struct proc_struct *proc = alloc_proc();
 	if (proc == NULL) {
 		panic("no availiable proc");
 	}
-	proc->pid = get_pid();
 	status = setup_kstack(proc);
 	if (status != 0) {
 		goto bad_fork_cleanup_proc;
@@ -395,6 +395,7 @@ int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
 		goto bad_fork_cleanup_kstack;
 	}
 	copy_thread(proc, stack, tf);
+	proc->pid = get_pid();
 	// list_add(hash_list + pid_hashfn(proc->pid), &proc->hash_link);
 	// list_add(&proc_list, &proc->list_link);
 	//LAB5 YOUR CODE : (update LAB4 steps)
@@ -406,11 +407,17 @@ int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
     */
 	proc->parent = current;
 	current->wait_state = 0;
-	set_links(proc);
+	{
+		int intr;
+		local_intr_save(intr);
+
+		set_links(proc);
+		hash_proc(proc);
+		local_intr_restore(intr)
+	}
 	wakeup_proc(proc);
-	hash_proc(proc);
 	ret = proc->pid;
-	
+	cprintf("forking done\n");
 fork_out:
 	return ret;
 
@@ -787,7 +794,7 @@ static int user_main(void *arg) {
 #ifdef TEST
 	KERNEL_EXECVE2(TEST, TESTSTART, TESTSIZE);
 #else
-	KERNEL_EXECVE(exit);
+	KERNEL_EXECVE(badarg);
 #endif
 	panic("user_main execve failed.\n");
 }

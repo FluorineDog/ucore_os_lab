@@ -2,10 +2,12 @@
 #include <ulib.h>
 
 int magic = -0x10384;
+volatile int debug_symbol = 1;
 
 int main(void) {
 	int pid, code;
-	cprintf("I am the parent. Forking the child...\n");
+	pid = 0;
+	cprintf("I am the parent(pid=%d). Forking the child...\n", getpid());
 	if ((pid = fork()) == 0) {
 		cprintf("I am the child.\n");
 		yield();
