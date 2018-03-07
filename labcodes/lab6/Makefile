@@ -46,19 +46,19 @@ endif
 # define compiler and flags
 ifndef  USELLVM
 HOSTCC		:= gcc
-HOSTCFLAGS	:= -g -Wall -O2
+HOSTCFLAGS	:= -g -Wall -O2 
 CC		:= $(GCCPREFIX)gcc
-CFLAGS	:= -fno-builtin -Wall -ggdb -m32 -gstabs -nostdinc $(DEFS)
+CFLAGS	:= -fno-builtin -Wall -ggdb -m32 -gstabs -nostdinc $(DEFS) -fno-PIC
 CFLAGS	+= $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 else
 HOSTCC		:= clang
 HOSTCFLAGS	:= -g -Wall -O2
 CC		:= clang
-CFLAGS	:= -fno-builtin -Wall -g -m32 -mno-sse -nostdinc $(DEFS)
+CFLAGS	:= -fno-builtin -Wall -g -m32 -mno-sse -nostdinc $(DEFS) -fno-PIC
 CFLAGS	+= $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 endif
 
-GDB		:= $(GCCPREFIX)gdb
+GDB		:= $(GCCPREFIX)cgdb
 CTYPE	:= c S
 
 LD      := $(GCCPREFIX)ld
@@ -323,7 +323,7 @@ print-%:
 .PHONY: clean dist-clean handin packall tags
 clean:
 	$(V)$(RM) $(GRADE_GDB_IN) $(GRADE_QEMU_OUT) cscope* tags
-	-$(RM) -r $(OBJDIR) $(BINDIR)
+	-$(RM) -r $(OBJDIR) $(BINDIR) .*.log
 
 dist-clean: clean
 	-$(RM) $(HANDIN)

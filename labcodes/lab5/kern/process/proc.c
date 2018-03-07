@@ -413,7 +413,7 @@ int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
 
 		set_links(proc);
 		hash_proc(proc);
-		local_intr_restore(intr)
+		local_intr_restore(intr);
 	}
 	wakeup_proc(proc);
 	ret = proc->pid;
