@@ -10,8 +10,11 @@ static void RR_init(struct run_queue *rq) {
 }
 
 static void RR_enqueue(struct run_queue *rq, struct proc_struct *proc) {
+	// check if proc is in other queue
 	assert(list_empty(&(proc->run_link)));
+
 	list_add_before(&(rq->run_list), &(proc->run_link));
+	// set default time_slice
 	if (proc->time_slice == 0 || proc->time_slice > rq->max_time_slice) {
 		proc->time_slice = rq->max_time_slice;
 	}
@@ -38,6 +41,7 @@ static void RR_proc_tick(struct run_queue *rq, struct proc_struct *proc) {
 		proc->time_slice--;
 	}
 	if (proc->time_slice == 0) {
+		cprintf("res\nt");
 		proc->need_resched = 1;
 	}
 }

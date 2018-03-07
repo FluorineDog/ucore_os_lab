@@ -125,7 +125,7 @@ static struct proc_struct *alloc_proc(void) {
      */
 		proc->rq = NULL;
 		list_init(&proc->run_link);
-		proc->time_slice = -1;
+		proc->time_slice = 0;
 	}
 	return proc;
 }
@@ -803,7 +803,7 @@ static int user_main(void *arg) {
 #ifdef TEST
 	KERNEL_EXECVE2(TEST, TESTSTART, TESTSIZE);
 #else
-	KERNEL_EXECVE(exit);
+	KERNEL_EXECVE(spin);
 #endif
 	panic("user_main execve failed.\n");
 }
