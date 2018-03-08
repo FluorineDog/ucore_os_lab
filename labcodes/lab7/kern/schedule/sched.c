@@ -27,7 +27,7 @@ static inline struct proc_struct *sched_class_pick_next(void) {
 	return sched_class->pick_next(rq);
 }
 
-static void sched_class_proc_tick(struct proc_struct *proc) {
+void sched_class_proc_tick(struct proc_struct *proc) {
 	if (proc != idleproc) {
 		sched_class->proc_tick(rq, proc);
 	} else {
@@ -43,7 +43,7 @@ void sched_init(void) {
 	sched_class = &default_sched_class;
 
 	rq = &__rq;
-	rq->max_time_slice = 5;
+	rq->max_time_slice = MAX_TIME_SLICE;
 	sched_class->init(rq);
 
 	cprintf("sched class: %s\n", sched_class->name);
