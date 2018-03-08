@@ -34,12 +34,16 @@ int vcprintf(const char *fmt, va_list ap) {
  * The return value is the number of characters which would be
  * written to stdout.
  * */
+// volatile int spin_lock = 0;
 int cprintf(const char *fmt, ...) {
+	// while(spin_lock);
+	// spin_lock += 1;
 	va_list ap;
 	int cnt;
 	va_start(ap, fmt);
 	cnt = vcprintf(fmt, ap);
 	va_end(ap);
+	// spin_lock -= 1;
 	return cnt;
 }
 

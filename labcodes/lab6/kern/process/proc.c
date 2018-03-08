@@ -126,6 +126,7 @@ static struct proc_struct *alloc_proc(void) {
 		proc->rq = NULL;
 		list_init(&proc->run_link);
 		proc->time_slice = 0;
+		proc->lab6_priority = 1;
 	}
 	return proc;
 }
@@ -391,7 +392,7 @@ int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
 	//    5. insert proc_struct into hash_list && proc_list
 	//    6. call wakeup_proc to make the new child process RUNNABLE
 	//    7. set ret vaule using child proc's pid
-	cprintf("fork begin\n");
+	// cprintf("fork begin\n");
 	struct proc_struct *proc = alloc_proc();
 	if (proc == NULL) {
 		panic("no availiable proc");
@@ -426,7 +427,7 @@ int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
 	}
 	wakeup_proc(proc);
 	ret = proc->pid;
-	cprintf("forking done\n");
+	// cprintf("forking done\n");
 fork_out:
 	return ret;
 
@@ -803,7 +804,7 @@ static int user_main(void *arg) {
 #ifdef TEST
 	KERNEL_EXECVE2(TEST, TESTSTART, TESTSIZE);
 #else
-	KERNEL_EXECVE(spin);
+	KERNEL_EXECVE(priority);
 #endif
 	panic("user_main execve failed.\n");
 }

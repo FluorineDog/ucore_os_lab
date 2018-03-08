@@ -41,7 +41,7 @@ static void RR_proc_tick(struct run_queue *rq, struct proc_struct *proc) {
 		proc->time_slice--;
 	}
 	if (proc->time_slice == 0) {
-		cprintf("res\nt");
+		cprintf("res\n");
 		proc->need_resched = 1;
 	}
 }

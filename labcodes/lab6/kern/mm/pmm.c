@@ -386,9 +386,9 @@ pte_t *get_pte(pde_t *pgdir, uintptr_t la, bool create) {
 	pte_t *pdep = page2kva(page);
 
 	pte_t *final = pdep + PTX(la);
-	if (*final != 0) {
-		cprintf("entry %x with create %d\n", *final, (create ? 1 : 0));
-	}
+	// if (*final != 0) {
+	// 	cprintf("entry %x with create %d\n", *final, (create ? 1 : 0));
+	// }
 	return final;
 	// if (entry == NULL) {
 	// 	if (!create) {
