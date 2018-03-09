@@ -24,7 +24,9 @@ void monitor_init(monitor_t *mtp, size_t num_cv) {
 void cond_signal(condvar_t *cvp) {
 	//LAB7 EXERCISE1: YOUR CODE
 	cprintf(
-			"cond_signal begin: cvp %x, cvp->count %d, cvp->owner->next_count %d\n",
+			"cond_signal begin: cvp %x, "
+			"cvp->count %d, "
+			"cvp->owner->next_count %d\n",
 			cvp, cvp->count, cvp->owner->next_count);
 	/*
    *      cond_signal(cv) {

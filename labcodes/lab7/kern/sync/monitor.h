@@ -67,19 +67,24 @@
 typedef struct monitor monitor_t;
 
 typedef struct condvar {
-	semaphore_t
-			sem;	// the sem semaphore  is used to down the waiting proc, and the signaling proc should up the waiting proc
+	// the sem semaphore  is used to down the waiting proc,
+	// and the signaling proc should up the waiting proc
+	semaphore_t sem;
 	int count;				 // the number of waiters on condvar
 	monitor_t *owner;	// the owner(monitor) of this condvar
 } condvar_t;
 
 typedef struct monitor {
-	semaphore_t
-			mutex;	// the mutex lock for going into the routines in monitor, should be initialized to 1
-	semaphore_t
-			next;	// the next semaphore is used to down the signaling proc itself, and the other OR wakeuped waiting proc should wake up the sleeped signaling proc.
-	int next_count;	// the number of of sleeped signaling proc
-	condvar_t *cv;	 // the condvars in monitor
+	// the mutex lock for going into the 
+	// routines in monitor, should be initialized to 1
+	semaphore_t mutex;
+	// the next semaphore is used to down the signaling proc itself, 
+	// and the other OR wakeuped waiting proc should wake up the sleeped signaling proc.
+	semaphore_t next;
+	// the number of of sleeped signaling proc
+	int next_count;
+	// the condvars in monitor
+	condvar_t *cv;
 } monitor_t;
 
 // Initialize variables in monitor.

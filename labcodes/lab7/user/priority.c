@@ -30,6 +30,7 @@ int main(void) {
 		acc[i] = 0;
 		if ((pids[i] = fork()) == 0) {
 			lab6_set_priority(i + 1);
+			cprintf("child %d is forked\n");
 			acc[i] = 0;
 			while (1) {
 				spin_delay();
