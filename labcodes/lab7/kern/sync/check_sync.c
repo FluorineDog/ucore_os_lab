@@ -229,17 +229,17 @@ int philosopher_using_condvar(
 void check_sync(void) {
 	int i;
 
-	//check semaphore
-	// sem_init(&mutex, 1);
-	// for (i = 0; i < N; i++) {
-	// 	sem_init(&s[i], 0);
-	// 	int pid = kernel_thread(philosopher_using_semaphore, (void *)i, 0);
-	// 	if (pid <= 0) {
-	// 		panic("create No.%d philosopher_using_semaphore failed.\n");
-	// 	}
-	// 	philosopher_proc_sema[i] = find_proc(pid);
-	// 	set_proc_name(philosopher_proc_sema[i], "philosopher_sema_proc");
-	// }
+	// check semaphore
+	sem_init(&mutex, 1);
+	for (i = 0; i < N; i++) {
+		sem_init(&s[i], 0);
+		int pid = kernel_thread(philosopher_using_semaphore, (void *)i, 0);
+		if (pid <= 0) {
+			panic("create No.%d philosopher_using_semaphore failed.\n");
+		}
+		philosopher_proc_sema[i] = find_proc(pid);
+		set_proc_name(philosopher_proc_sema[i], "philosopher_sema_proc");
+	}
 
 	//check condition variable
 	// monitor_init(&mt, N);

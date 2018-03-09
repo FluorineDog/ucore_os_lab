@@ -240,7 +240,7 @@ static void trap_dispatch(struct trapframe *tf) {
 			}
 			if (ticks % TICK_NUM == 0) {
 				assert(current != NULL);
-				current->need_resched = 1;
+				// current->need_resched = 1;
 			}
 
 			/* LAB7 YOUR CODE */
@@ -248,6 +248,7 @@ static void trap_dispatch(struct trapframe *tf) {
          * IMPORTANT FUNCTIONS:
 	     * run_timer_list
          */
+			run_timer_list();
 			break;
 		case IRQ_OFFSET + IRQ_COM1:
 			c = cons_getc();
