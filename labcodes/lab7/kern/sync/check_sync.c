@@ -78,8 +78,13 @@ int state_sema[N]; /* 记录每个人状态的数组 */
 /* 信号量是一个特殊的整型变量 */
 semaphore_t mutex; /* 临界区互斥 */
 semaphore_t s[N];	/* 每个哲学家一个信号量 */
-
+char *state_str[] = {
+		[HUNGRY] = "HUNGRAY",
+		[THINKING] = "THINKING",
+		[EATING] = "EATING",
+};
 struct proc_struct *philosopher_proc_sema[N];
+
 
 void phi_test_sema(i) /* i：哲学家号码从0到N-1 */
 {
@@ -113,16 +118,17 @@ int philosopher_using_semaphore(void *arg) /* i：哲学家号码，从0到N-1 *
 	int i, iter = 0;
 	i = (int)arg;
 	cprintf("I am No.%d philosopher_sema\n", i);
-	while (iter++ < TIMES) { /* 无限循环 */
-		cprintf("Iter %d, No.%d philosopher_sema is thinking\n", iter,
-						i); /* 哲学家正在思考 */
+	/* 无限循环 */
+	while (iter++ < TIMES) {
+		/* 哲学家正在思考 */
+		cprintf("Iter %d, No.%d philosopher_sema is thinking\n", iter, i);
 		do_sleep(SLEEP_TIME);
-		phi_take_forks_sema(i);
 		/* 需要两只叉子，或者阻塞 */
+		phi_take_forks_sema(i);
 		cprintf("Iter %d, No.%d philosopher_sema is eating\n", iter, i); /* 进餐 */
 		do_sleep(SLEEP_TIME);
-		phi_put_forks_sema(i);
 		/* 把两把叉子同时放回桌子 */
+		phi_put_forks_sema(i);
 	}
 	cprintf("No.%d philosopher_sema quit\n", i);
 	return 0;
@@ -166,23 +172,41 @@ struct proc_struct *philosopher_proc_condvar[N];	// N philosopher
 int state_condvar[N];			 // the philosopher's state: EATING, HUNGARY, THINKING
 monitor_t mt, *mtp = &mt;	// monitor
 
+#define dog_out_state(i) cprintf("dog: state %d is %s\n", i, state_str[state_condvar[i]]);
 void phi_test_condvar(i) {
 	if (state_condvar[i] == HUNGRY && state_condvar[LEFT] != EATING &&
 			state_condvar[RIGHT] != EATING) {
 		cprintf("phi_test_condvar: state_condvar[%d] will eating\n", i);
 		state_condvar[i] = EATING;
+		dog_out_state(i);
 		cprintf("phi_test_condvar: signal self_cv[%d] \n", i);
 		cond_signal(&mtp->cv[i]);
 	}
 }
 
 void phi_take_forks_condvar(int i) {
+	//  void pickup(int i) {
+	//      state[i] = hungry;
+	//      if ((state[(i+4)%5] != eating) && (state[(i+1)%5] != eating)) {
+	//        state[i] = eating;
+	//      else
+	//         self[i].wait();
+	//   }
+
+	// dog: acquire monitor lock
 	down(&(mtp->mutex));
 	//--------into routine in monitor--------------
 	// LAB7 EXERCISE1: YOUR CODE
 	// I am hungry
 	// try to get fork
 	//--------leave routine in monitor--------------
+
+	state_condvar[i] = HUNGRY;
+	if (state_condvar[LEFT] != EATING && state_condvar[RIGHT] != EATING) {
+		phi_test_condvar(i);
+	} else {
+		cond_wait(&mtp->cv[i]);
+	}
 	if (mtp->next_count > 0)
 		up(&(mtp->next));
 	else
@@ -197,6 +221,21 @@ void phi_put_forks_condvar(int i) {
 	// I ate over
 	// test left and right neighbors
 	//--------leave routine in monitor--------------
+	// void putdown(int i) {
+	// 	state[i] = thinking;
+	// 	if ((state[(i + 4) % 5] == hungry) && (state[(i + 3) % 5] != eating)) {
+	// 		state[(i + 4) % 5] = eating;
+	// 		self[(i + 4) % 5].signal();
+	// 	}
+	// 	if ((state[(i + 1) % 5] == hungry) && (state[(i + 2) % 5] != eating)) {
+	// 		state[(i + 1) % 5] = eating;
+	// 		self[(i + 1) % 5].signal();
+	// 	}
+	// }
+	state_condvar[i] = THINKING;
+	dog_out_state(i);
+	phi_test_condvar(LEFT);
+	phi_test_condvar(RIGHT);
 	if (mtp->next_count > 0)
 		up(&(mtp->next));
 	else
@@ -204,23 +243,23 @@ void phi_put_forks_condvar(int i) {
 }
 
 //---------- philosophers using monitor (condition variable) ----------------------
-int philosopher_using_condvar(
-		void *arg) { /* arg is the No. of philosopher 0~N-1*/
-
+int philosopher_using_condvar(void *arg) {
+	/* arg is the No. of philosopher 0~N-1*/
 	int i, iter = 0;
 	i = (int)arg;
 	cprintf("I am No.%d philosopher_condvar\n", i);
-	while (iter++ < TIMES) { /* iterate*/
-		cprintf("Iter %d, No.%d philosopher_condvar is thinking\n", iter,
-						i); /* thinking*/
+	/* iterate*/
+	while (iter++ < TIMES) {
+		/* thinking*/
+		cprintf("Iter %d, No.%d philosopher_condvar is thinking\n", iter, i);
 		do_sleep(SLEEP_TIME);
-		phi_take_forks_condvar(i);
 		/* need two forks, maybe blocked */
-		cprintf("Iter %d, No.%d philosopher_condvar is eating\n", iter,
-						i); /* eating*/
+		phi_take_forks_condvar(i);
+		/* eating*/
+		cprintf("Iter %d, No.%d philosopher_condvar is eating\n", iter, i);
 		do_sleep(SLEEP_TIME);
+		/* return two forks back */
 		phi_put_forks_condvar(i);
-		/* return two forks back*/
 	}
 	cprintf("No.%d philosopher_condvar quit\n", i);
 	return 0;
@@ -241,15 +280,16 @@ void check_sync(void) {
 		set_proc_name(philosopher_proc_sema[i], "philosopher_sema_proc");
 	}
 
-	//check condition variable
-	// monitor_init(&mt, N);
-	// for (i = 0; i < N; i++) {
-	// 	state_condvar[i] = THINKING;
-	// 	int pid = kernel_thread(philosopher_using_condvar, (void *)i, 0);
-	// 	if (pid <= 0) {
-	// 		panic("create No.%d philosopher_using_condvar failed.\n");
-	// 	}
-	// 	philosopher_proc_condvar[i] = find_proc(pid);
-	// 	set_proc_name(philosopher_proc_condvar[i], "philosopher_condvar_proc");
-	// }
+	// check condition variable
+	monitor_init(&mt, N);
+	for (i = 0; i < N; i++) {
+		state_condvar[i] = THINKING;
+		dog_out_state(i);
+		int pid = kernel_thread(philosopher_using_condvar, (void *)i, 0);
+		if (pid <= 0) {
+			panic("create No.%d philosopher_using_condvar failed.\n");
+		}
+		philosopher_proc_condvar[i] = find_proc(pid);
+		set_proc_name(philosopher_proc_condvar[i], "philosopher_condvar_proc");
+	}
 }
