@@ -58,7 +58,7 @@ CFLAGS	:= -fno-builtin -Wall -g -m32 -mno-sse -nostdinc $(DEFS)
 CFLAGS	+= $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 endif
 
-GDB		:= $(GCCPREFIX)gdb
+GDB		:= $(GCCPREFIX)cgdb
 CTYPE	:= c S
 
 LD      := $(GCCPREFIX)ld
@@ -272,8 +272,6 @@ $(foreach p,$(USER_BINS),$(eval $(call fscopy,$(p),$(SFSROOT)$(SLASH))))
 
 $(SFSROOT):
 	if [ ! -d "$(SFSROOT)" ]; then mkdir $(SFSROOT); fi
-
-$(SFSROOT):
 	$(V)$(MKDIR) $@
 
 $(SFSIMG): $(SFSROOT) $(SFSBINS) | $(call totarget,mksfs)
@@ -375,7 +373,7 @@ print-%:
 .PHONY: clean dist-clean handin packall tags
 clean:
 	$(V)$(RM) $(GRADE_GDB_IN) $(GRADE_QEMU_OUT)  $(SFSBINS) cscope* tags
-	$(V)$(RM) -r $(OBJDIR) $(BINDIR) $(SFSROOT)
+	$(V)$(RM) -r $(OBJDIR) $(BINDIR) $(SFSROOT) .*.log
 
 dist-clean: clean
 	-$(RM) $(HANDIN)

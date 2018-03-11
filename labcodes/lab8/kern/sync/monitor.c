@@ -24,7 +24,9 @@ void monitor_init(monitor_t *mtp, size_t num_cv) {
 void cond_signal(condvar_t *cvp) {
 	//LAB7 EXERCISE1: YOUR CODE
 	cprintf(
-			"cond_signal begin: cvp %x, cvp->count %d, cvp->owner->next_count %d\n",
+			"cond_signal begin: cvp %x, "
+			"cvp->count %d, "
+			"cvp->owner->next_count %d\n",
 			cvp, cvp->count, cvp->owner->next_count);
 	/*
    *      cond_signal(cv) {
@@ -36,6 +38,15 @@ void cond_signal(condvar_t *cvp) {
    *          }
    *       }
    */
+
+	// if nobody waiting for cv, then signal lost
+	if (cvp->count > 0) {
+		monitor_t *mtp = cvp->owner;
+		mtp->next_count++;
+		up(&cvp->sem);
+		down(&mtp->next);
+		mtp->next_count--;
+	}
 	cprintf("cond_signal end: cvp %x, cvp->count %d, cvp->owner->next_count %d\n",
 					cvp, cvp->count, cvp->owner->next_count);
 }
@@ -56,6 +67,19 @@ void cond_wait(condvar_t *cvp) {
     *         wait(cv.sem);
     *         cv.count --;
     */
+
+	monitor_t *mtp = cvp->owner;
+	// if monitor has other threads entered
+	cvp->count++;
+	if (mtp->next_count > 0) {
+		up(&mtp->next);
+	} else {
+		// release the lock
+		up(&mtp->mutex);
+	}
+	// hold the cv
+	down(&cvp->sem);
+	cvp->count--;
 	cprintf("cond_wait end:  cvp %x, cvp->count %d, cvp->owner->next_count %d\n",
 					cvp, cvp->count, cvp->owner->next_count);
 }

@@ -105,6 +105,11 @@ static struct proc_struct *alloc_proc(void) {
      *       uint32_t flags;                             // Process flag
      *       char name[PROC_NAME_LEN + 1];               // Process name
      */
+		memset(proc, 0, sizeof(struct proc_struct));
+		proc->pid = -1;
+		proc->state = PROC_UNINIT;
+		proc->cr3 = boot_cr3;
+
 		//LAB5 YOUR CODE : (update LAB4 steps)
 		/*
      * below fields(add in LAB5) in proc_struct need to be initialized	
@@ -121,7 +126,10 @@ static struct proc_struct *alloc_proc(void) {
      *     uint32_t lab6_stride;                       // FOR LAB6 ONLY: the current stride of the process
      *     uint32_t lab6_priority;                     // FOR LAB6 ONLY: the priority of process, set by lab6_set_priority(uint32_t)
      */
-		//LAB8:EXERCISE2 YOUR CODE HINT:need add some code to init fs in proc_struct, ...
+		proc->rq = NULL;
+		list_init(&proc->run_link);
+		proc->time_slice = 0;
+		proc->lab6_priority = 1;
 	}
 	return proc;
 }
@@ -398,7 +406,7 @@ static void put_files(struct proc_struct *proc) {
  */
 int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
 	int ret = -E_NO_FREE_PROC;
-	struct proc_struct *proc;
+	int status;
 	if (nr_process >= MAX_PROCESS) {
 		goto fork_out;
 	}
@@ -429,7 +437,23 @@ int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
 	//    5. insert proc_struct into hash_list && proc_list
 	//    6. call wakeup_proc to make the new child process RUNNABLE
 	//    7. set ret vaule using child proc's pid
-
+	// cprintf("fork begin\n");
+	struct proc_struct *proc = alloc_proc();
+	if (proc == NULL) {
+		panic("no availiable proc");
+	}
+	status = setup_kstack(proc);
+	if (status != 0) {
+		goto bad_fork_cleanup_proc;
+	}
+	status = copy_mm(clone_flags, proc);
+	if (status != 0) {
+		goto bad_fork_cleanup_kstack;
+	}
+	copy_thread(proc, stack, tf);
+	proc->pid = get_pid();
+	// list_add(hash_list + pid_hashfn(proc->pid), &proc->hash_link);
+	// list_add(&proc_list, &proc->list_link);
 	//LAB5 YOUR CODE : (update LAB4 steps)
 	/* Some Functions
     *    set_links:  set the relation links of process.  ALSO SEE: remove_links:  lean the relation links of process 
@@ -437,7 +461,18 @@ int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
 	*    update step 1: set child proc's parent to current process, make sure current process's wait_state is 0
 	*    update step 5: insert proc_struct into hash_list && proc_list, set the relation links of process
     */
-
+	proc->parent = current;
+	current->wait_state = 0;
+	{
+		int intr;
+		local_intr_save(intr);
+		set_links(proc);
+		hash_proc(proc);
+		local_intr_restore(intr);
+	}
+	wakeup_proc(proc);
+	ret = proc->pid;
+	// cprintf("forking done\n");
 fork_out:
 	return ret;
 
@@ -521,6 +556,10 @@ static int load_icode_read(int fd, void *buf, size_t len, off_t offset) {
 
 // load_icode -  called by sys_exec-->do_execve
 
+
+
+// dog is here
+
 static int load_icode(int fd, int argc, char **kargv) {
 	/* LAB8:EXERCISE2 YOUR CODE  HINT:how to load the file with handler fd  in to process's memory? how to setup argc/argv?
      * MACROs or Functions:
@@ -547,6 +586,23 @@ static int load_icode(int fd, int argc, char **kargv) {
      * (8) if up steps failed, you should cleanup the env.
      */
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // this function isn't very correct in LAB8
 static void put_kargv(int argc, char **kargv) {
