@@ -65,6 +65,7 @@ struct sfs_disk_entry {
 #define sfs_dentry_size sizeof(((struct sfs_disk_entry *)0)->name)
 
 /* inode for sfs */
+// kept in memory, for management
 struct sfs_inode {
 	struct sfs_disk_inode *din; /* on-disk inode */
 	uint32_t ino;								/* inode number */
