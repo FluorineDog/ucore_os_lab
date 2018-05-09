@@ -235,7 +235,7 @@ static void trap_dispatch(struct trapframe *tf) {
 	     * sched_class_proc_tick
          */
 			ticks++;
-			if(ticks % 1 == 0){
+			if(ticks % 5 == 0){
 				sched_class_proc_tick(current);
 			}
 			if (ticks % TICK_NUM == 0) {

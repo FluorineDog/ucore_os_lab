@@ -804,7 +804,7 @@ static int user_main(void *arg) {
 #ifdef TEST
 	KERNEL_EXECVE2(TEST, TESTSTART, TESTSIZE);
 #else
-	KERNEL_EXECVE(matrix);
+	KERNEL_EXECVE(forktree);
 #endif
 	panic("user_main execve failed.\n");
 }
