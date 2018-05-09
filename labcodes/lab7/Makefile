@@ -48,7 +48,7 @@ ifndef  USELLVM
 HOSTCC		:= gcc
 HOSTCFLAGS	:= -g -Wall -O2
 CC		:= $(GCCPREFIX)gcc
-CFLAGS	:= -fno-builtin -Wall -ggdb -m32 -gstabs -nostdinc -fno-PIC $(DEFS)
+CFLAGS	:= -fno-builtin -Wall -ggdb -m32 -gstabs -nostdinc -fno-PIC -march=i386 $(DEFS)
 CFLAGS	+= $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 else
 HOSTCC		:= clang

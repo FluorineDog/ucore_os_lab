@@ -68,15 +68,15 @@ objdump -t bin/kernel | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$/d' > obj/kernel.s
 gcc -Iboot/ -fno-builtin -Wall -ggdb -m32 -gstabs -nostdinc  -fno-stack-protector -Ilibs/ -Os -nostdinc -c boot/bootasm.S -o obj/boot/bootasm.o
 + cc boot/bootmain.c
 gcc -Iboot/ -fno-builtin -Wall -ggdb -m32 -gstabs -nostdinc  -fno-stack-protector -Ilibs/ -Os -nostdinc -c boot/bootmain.c -o obj/boot/bootmain.o
-+ cc tools/sign.c
-
-** section 6
-gcc -Itools/ -g -Wall -O2  -c tools/sign.c -o obj/sign/tools/sign.o
-gcc -g -Wall -O2  obj/sign/tools/sign.o -o bin/sign
 + ld bin/bootblock
 ld -m    elf_i386 -nostdlib -N -e start -Ttext 0x7C00 obj/boot/bootasm.o obj/boot/bootmain.o -o obj/bootblock.o
 objdump -S obj/bootblock.o > obj/bootblock.asm
 objcopy -S -O binary obj/bootblock.o obj/bootblock.out
+
+** section 6
++ cc tools/sign.c
+gcc -Itools/ -g -Wall -O2  -c tools/sign.c -o obj/sign/tools/sign.o
+gcc -g -Wall -O2  obj/sign/tools/sign.o -o bin/sign
 bin/sign obj/bootblock.out bin/bootblock
 'obj/bootblock.out' size: 488 bytes
 build 512 bytes boot sector: 'bin/bootblock' success!
