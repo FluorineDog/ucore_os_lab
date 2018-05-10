@@ -27,17 +27,26 @@ process state       :     meaning               -- reason
     PROC_ZOMBIE     :   almost dead             -- do_exit
 
 -----------------------------
-process state changing:
                                             
-  alloc_proc                                 RUNNING
-      +                                   +--<----<--+
-      +                                   + proc_run +
-      V                                   +-->---->--+ 
-PROC_UNINIT -- proc_init/wakeup_proc --> PROC_RUNNABLE -- try_free_pages/do_wait/do_sleep --> PROC_SLEEPING --
-                                           A      +                                                           +
-                                           |      +--- do_exit --> PROC_ZOMBIE                                +
-                                           +                                                                  + 
-                                           -----------------------wakeup_proc----------------------------------
+  alloc_proc                         
+      +                             
+      +                                                            
+PROC_UNINIT 
+|
+->proc_init/wakeup_proc
+      |
+      |
+|-----
+|
+|       RUNNING
+|    +--<----<--+
+|    + proc_run +
+|    +-->---->--+ 
+--> PROC_RUNNABLE -- try_free_pages/do_wait/do_sleep --> PROC_SLEEPING --
+      A      +                                                           +
+      |      +--- do_exit --> PROC_ZOMBIE                                +
+      +                                                                  + 
+      -----------------------wakeup_proc----------------------------------
 -----------------------------
 process relations
 parent:           proc->parent  (proc is children)
